@@ -8,6 +8,7 @@
 
     <string name="location_label">Location</string>
     <string name="location_enable">Enable</string>
-    <string name="location_code_desc">SMS-text to get location</string>
+    <string name="location_default_sms">Where are you?</string>
+    <string name="location_sms_text_lable">SMS-text to get sms</string>
 
 </resources>
