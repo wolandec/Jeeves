@@ -6,19 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryDark"
-    tools:context="wolandec.smssecretary.LocationActivity"
-    tools:layout_editor_absoluteY="81dp">
+    tools:context="wolandec.smssecretary.CallActivity">
+
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/location_label"
+        android:text="@string/call_label"
         android:textColor="@color/mainFontColor"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
     <Switch
-        android:id="@+id/locationEnable"
+        android:id="@+id/callEnable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/location_enable"
@@ -30,7 +30,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/location_sms_text_lable"
+        android:text="@string/call_sms_text_lable"
         android:textColor="@color/mainFontColor"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="99dp" />
@@ -41,9 +41,10 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/location_default_sms"
+        android:text="@string/call_default_sms"
         android:textColor="@color/mainFontColor"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="120dp" />
+
 
 </LinearLayout>

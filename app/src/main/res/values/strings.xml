@@ -3,12 +3,15 @@
 
     <string-array name="list_preferences">
         <item>Location</item>
-        <item>Dial</item>
+        <item>Call</item>
     </string-array>
 
     <string name="location_label">Location</string>
     <string name="location_enable">Enable</string>
     <string name="location_default_sms">Where are you?</string>
     <string name="location_sms_text_lable">SMS-text to get sms</string>
+    <string name="call_label">Call</string>
+    <string name="call_sms_text_lable">SMS-text to call back</string>
+    <string name="call_default_sms">Call</string>
 
 </resources>
