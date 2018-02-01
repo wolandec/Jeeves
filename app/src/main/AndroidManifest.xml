@@ -41,7 +41,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".CallActivity" />
-        <activity android:name=".ServiceActivity" android:theme="@android:style/Theme.NoDisplay"></activity>
     </application>
 
 </manifest>

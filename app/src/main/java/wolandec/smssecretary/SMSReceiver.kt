@@ -7,6 +7,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.telephony.SmsMessage
 import android.util.Log
+import org.greenrobot.eventbus.EventBus
+
+
 
 
 /**
@@ -14,8 +17,6 @@ import android.util.Log
  */
 
 class SMSReceiver() : BroadcastReceiver() {
-
-    public var serviceActivity: ServiceActivity? = null
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
@@ -31,7 +32,7 @@ class SMSReceiver() : BroadcastReceiver() {
                         messages[i] = SmsMessage.createFromPdu(pdus[i] as ByteArray)
                         phone = messages[i]!!.getOriginatingAddress()
                         val message = messages[i]!!.getMessageBody()
-//                        serviceActivity!!.proceedSMS(phone, message);
+                        EventBus.getDefault().post(SMSMessageEvent(phone,message))
                     }
                 } catch (e: Exception) {
                     Log.d("Exception caught", e.message);
