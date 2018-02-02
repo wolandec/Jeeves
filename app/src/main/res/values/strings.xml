@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SMSSecretary</string>
+    <string name="app_name">Jeeves</string>
 
     <string-array name="list_preferences">
         <item>Location</item>
