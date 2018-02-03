@@ -1,4 +1,4 @@
-package wolandec.smssecretary
+package wolandec.jeeves
 
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +12,7 @@ import android.widget.ListView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import wolandec.jeeves.R
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,12 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var myListView: ListView
     private lateinit var prefList: Array<out String>
-
-    override fun onStart() {
-        super.onStart()
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
-    }
 
     public override fun onStop() {
         super.onStop()
@@ -67,14 +62,4 @@ class MainActivity : AppCompatActivity() {
         myListView.setAdapter(adapter)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
-        when (smsMessageEvent.message) {
-            "Call" -> {
-                val intent = Intent(Intent.ACTION_CALL)
-                intent.data = Uri.parse("tel:" + smsMessageEvent.phone)
-                startActivity(intent)
-            }
-        }
-    }
 }

@@ -1,7 +1,8 @@
-package wolandec.smssecretary
+package wolandec.jeeves
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import wolandec.jeeves.R
 
 class CallActivity : AppCompatActivity() {
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="wolandec.smssecretary">
+    package="wolandec.jeeves">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -20,32 +20,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:enabled="true"
-            android:name=".SMSReceiver">
+            android:name="wolandec.jeeves.SMSReceiver"
+            android:enabled="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:name="wolandec.jeeves.MainActivity"
+            android:label="@string/app_name"></activity>
+        <activity android:name="wolandec.jeeves.LocationActivity">
+        </activity>
+        <activity android:name="wolandec.jeeves.CallActivity" />
+        <activity
+            android:name="wolandec.jeeves.ServiceActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LocationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".CallActivity" />
     </application>
 
 </manifest>

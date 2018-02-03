@@ -1,11 +1,13 @@
-package wolandec.smssecretary
+package wolandec.jeeves
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telephony.SmsMessage
 import android.util.Log
+import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
+import android.support.v4.content.ContextCompat.startActivity
 
 
 /**
@@ -14,23 +16,20 @@ import org.greenrobot.eventbus.EventBus
 
 class SMSReceiver() : BroadcastReceiver() {
 
+    var serviceActivity: ServiceActivity? = null
+
     override fun onReceive(context: Context?, intent: Intent?) {
 
-//        /****** For Start Activity *****/
-//        val i = Intent(context, MainActivity::class.java)
-//        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        context!!.startActivity(i)
-//        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-//            MainActivity.getInstance()
-//            EventBus.getDefault().post(SMSMessageEvent("312324", "Call"))
-////            EventBus.getDefault().post(SMSMessageEvent("3213123123", "Call"))
-////            Toast.makeText(context, "hello", Toast.LENGTH_LONG).show()
-//        }
-
-//        /***** For start Service  ****/
-//        val myIntent = Intent(context, ServiceClassName::class.java)
-//        context.startService(myIntent)
-
+        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            Toast.makeText(context, "hello", Toast.LENGTH_LONG).show()
+            val i = Intent(context, ServiceActivity::class.java)
+            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            try {
+                context!!.startActivity(i)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            }
+        }
 
         if (intent?.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             val bundle = intent?.getExtras()

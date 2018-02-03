@@ -1,7 +1,5 @@
-package wolandec.smssecretary
+package wolandec.jeeves
 
-import android.content.Context
-import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -9,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import wolandec.jeeves.R
 
 class LocationActivity : AppCompatActivity() {
 
