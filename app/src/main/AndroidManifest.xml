@@ -31,18 +31,19 @@
         </receiver>
 
         <activity
-            android:name="wolandec.jeeves.MainActivity"
-            android:label="@string/app_name"></activity>
-        <activity android:name="wolandec.jeeves.LocationActivity">
-        </activity>
-        <activity android:name="wolandec.jeeves.CallActivity" />
-        <activity
-            android:name="wolandec.jeeves.ServiceActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+            android:name="wolandec.jeeves.SettingsActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name="wolandec.jeeves.LocationActivity"></activity>
+        <activity android:name="wolandec.jeeves.CallActivity" />
+        <activity
+            android:name="wolandec.jeeves.ServiceActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+
         </activity>
     </application>
 

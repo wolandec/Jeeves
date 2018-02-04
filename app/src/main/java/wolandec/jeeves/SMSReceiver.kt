@@ -21,7 +21,6 @@ class SMSReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            Toast.makeText(context, "hello", Toast.LENGTH_LONG).show()
             val i = Intent(context, ServiceActivity::class.java)
             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             try {

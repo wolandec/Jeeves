@@ -1,7 +1,6 @@
 package wolandec.jeeves
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -9,13 +8,9 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import wolandec.jeeves.R
 
 
-class MainActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
     val LOG_TAG = "myLogs"
 
     lateinit var myListView: ListView
@@ -42,11 +37,11 @@ class MainActivity : AppCompatActivity() {
                                      position: Int, id: Long) {
                 when (id) {
                     0L -> {
-                        val intent = Intent(this@MainActivity, LocationActivity::class.java)
+                        val intent = Intent(this@SettingsActivity, LocationActivity::class.java)
                         startActivity(intent)
                     }
                     1L -> {
-                        val intent = Intent(this@MainActivity, CallActivity::class.java)
+                        val intent = Intent(this@SettingsActivity, CallActivity::class.java)
                         startActivity(intent)
                     }
                     else -> {

@@ -13,5 +13,6 @@
     <string name="call_label">Call</string>
     <string name="call_sms_text_lable">SMS-text to call back</string>
     <string name="call_default_sms">Call</string>
+    <string name="on_boot_string">Jeeves is alive.</string>
 
 </resources>
