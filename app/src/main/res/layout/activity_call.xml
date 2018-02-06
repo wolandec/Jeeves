@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryDark"
-    tools:context="wolandec.smssecretary.wolandec.jeeves.CallActivity">
+    tools:context="wolandec.jeeves.CallActivity">
 
 
     <TextView

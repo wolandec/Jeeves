@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "wolandec.smssecretary"
+        applicationId "wolandec.jeeves"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1

@@ -1,6 +1,7 @@
 package wolandec.jeeves
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -9,8 +10,17 @@ import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import android.net.ConnectivityManager
+import android.content.IntentFilter
+import android.drm.DrmStore
+import android.provider.Telephony
+
 
 class ServiceActivity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onStart() {
         super.onStart()

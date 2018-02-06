@@ -20,6 +20,8 @@ class SMSReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
+        Log.d("Receive", intent?.getAction())
+
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             val i = Intent(context, ServiceActivity::class.java)
             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
