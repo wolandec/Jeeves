@@ -19,6 +19,15 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var myListView: ListView
     private lateinit var prefList: Array<out String>
 
+    var brReceiver: SMSReceiver = SMSReceiver()
+
+    private fun registerIntentReceiver() {
+        registerReceiver(brReceiver,
+                IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
+        registerReceiver(brReceiver,
+                IntentFilter(Intent.ACTION_BOOT_COMPLETED))
+    }
+
     public override fun onStop() {
         super.onStop()
     }
@@ -27,23 +36,14 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         registerIntentReceiver()
-
-        startServiceActivity()
         setContentView(R.layout.activity_main)
 
         myListView = findViewById<ListView>(R.id.settingsList)
         prefList = getResources().getStringArray(R.array.list_preferences);
 
+        startServiceActivity()
         fillSettigsList()
         setPrefListOnClickListener()
-    }
-
-    private fun registerIntentReceiver() {
-        var brReceiver: SMSReceiver = SMSReceiver()
-        registerReceiver(brReceiver,
-                IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
-        registerReceiver(brReceiver,
-                IntentFilter(Intent.ACTION_BOOT_COMPLETED))
     }
 
     private fun startServiceActivity() {

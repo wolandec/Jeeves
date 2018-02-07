@@ -30,6 +30,9 @@ class ServiceActivity : Activity() {
         super.finish()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
