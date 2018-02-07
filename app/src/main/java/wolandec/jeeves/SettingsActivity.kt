@@ -1,14 +1,8 @@
 package wolandec.jeeves
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.provider.Telephony
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 
@@ -19,67 +13,24 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var myListView: ListView
     private lateinit var prefList: Array<out String>
 
-    var brReceiver: SMSReceiver = SMSReceiver()
-
-    private fun registerIntentReceiver() {
-        registerReceiver(brReceiver,
-                IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
-        registerReceiver(brReceiver,
-                IntentFilter(Intent.ACTION_BOOT_COMPLETED))
-    }
-
     public override fun onStop() {
         super.onStop()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        registerIntentReceiver()
         setContentView(R.layout.activity_main)
-
-        myListView = findViewById<ListView>(R.id.settingsList)
-        prefList = getResources().getStringArray(R.array.list_preferences);
-
-        startServiceActivity()
-        fillSettigsList()
-        setPrefListOnClickListener()
+        registerBroadcastService()
     }
 
-    private fun startServiceActivity() {
-        val i = Intent(this@SettingsActivity, ServiceActivity::class.java)
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    private fun registerBroadcastService() {
+        val i = Intent("wolandec.jeeves.BroadcastService")
+        i.setClass(this, BroadcastService::class.java!!)
         try {
-            startActivity(i)
+            this!!.startService(i)
         } catch (e: Exception) {
-            Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
-    }
-
-    private fun setPrefListOnClickListener() {
-        myListView.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClick(parent: AdapterView<*>, view: View,
-                                     position: Int, id: Long) {
-                when (id) {
-                    0L -> {
-                        val intent = Intent(this@SettingsActivity, LocationActivity::class.java)
-                        startActivity(intent)
-                    }
-                    1L -> {
-                        val intent = Intent(this@SettingsActivity, CallActivity::class.java)
-                        startActivity(intent)
-                    }
-                    else -> {
-                    }
-                }
-            }
-        })
-    }
-
-    fun fillSettigsList() {
-        val adapter: ArrayAdapter<String>
-        adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, prefList)
-        myListView.setAdapter(adapter)
     }
 
 }

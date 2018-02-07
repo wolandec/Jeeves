@@ -7,7 +7,6 @@ import android.telephony.SmsMessage
 import android.util.Log
 import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
-import android.support.v4.content.ContextCompat.startActivity
 
 
 /**
@@ -16,17 +15,17 @@ import android.support.v4.content.ContextCompat.startActivity
 
 class SMSReceiver() : BroadcastReceiver() {
 
-    var serviceActivity: ServiceActivity? = null
-
     override fun onReceive(context: Context?, intent: Intent?) {
 
+        Toast.makeText(context, intent?.getAction(), Toast.LENGTH_LONG).show()
         Log.d("Receive", intent?.getAction())
 
-        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            val i = Intent(context, ServiceActivity::class.java)
-            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
+                intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON")) {
+            val i = Intent("wolandec.jeeves.BroadcastService")
+            i.setClass(context, BroadcastService::class.java!!)
             try {
-                context!!.startActivity(i)
+                context!!.startService(i)
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             }
