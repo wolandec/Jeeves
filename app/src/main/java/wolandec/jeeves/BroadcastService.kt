@@ -41,7 +41,7 @@ class BroadcastService : Service() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
         when (smsMessageEvent.message.decapitalize()) {
-            "сall" -> {
+            "call" -> {
                 callPhone(smsMessageEvent)
             }
             "location" ->{
