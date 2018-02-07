@@ -7,10 +7,14 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.IBinder
 import android.provider.Telephony
+import android.telephony.SmsManager
 import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+
+
+
 
 class BroadcastService : Service() {
 
@@ -34,16 +38,28 @@ class BroadcastService : Service() {
         registerIntentReceiver()
     }
 
-    @SuppressLint("MissingPermission")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
-        when (smsMessageEvent.message) {
-            "Call" -> {
-                val intent = Intent(Intent.ACTION_CALL)
-                intent.data = Uri.parse("tel:" + smsMessageEvent.phone)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
+        when (smsMessageEvent.message.decapitalize()) {
+            "сall" -> {
+                callPhone(smsMessageEvent)
+            }
+            "location" ->{
+                sendLocation(smsMessageEvent)
             }
         }
+    }
+
+    private fun sendLocation(smsMessageEvent: SMSMessageEvent) {
+        val sms = SmsManager.getDefault()
+        sms.sendTextMessage(smsMessageEvent.phone, null, "Hello", null, null)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun callPhone(smsMessageEvent: SMSMessageEvent) {
+        val intent = Intent(Intent.ACTION_CALL)
+        intent.data = Uri.parse("tel:" + smsMessageEvent.phone)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 }

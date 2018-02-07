@@ -17,7 +17,6 @@ class SMSReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        Toast.makeText(context, intent?.getAction(), Toast.LENGTH_LONG).show()
         Log.d("Receive", intent?.getAction())
 
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
