@@ -4,6 +4,9 @@
     <string-array name="list_preferences">
         <item>Location</item>
         <item>Call</item>
+        <item>Normal mode</item>
+        <item>Silent mode</item>
+        <item>Wi-Fi networks</item>
     </string-array>
 
     <string name="location_label">Location</string>
@@ -14,5 +17,8 @@
     <string name="call_sms_text_lable">SMS-text to call back</string>
     <string name="call_default_sms">Call</string>
     <string name="on_boot_string">Jeeves is alive.</string>
+    <string name="silent_mode_label">Silent mode</string>
+    <string name="normal_mode_label">Normal mode</string>
+    <string name="wifi_net_label">Wi-Fi networks</string>
 
 </resources>
