@@ -1,10 +1,11 @@
 package wolandec.jeeves
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import wolandec.jeeves.R
+import android.support.v7.app.AppCompatActivity
 
 class CallActivity : AppCompatActivity() {
+
+    val LOG_TAG = this::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

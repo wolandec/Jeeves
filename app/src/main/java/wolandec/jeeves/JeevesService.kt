@@ -10,12 +10,15 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.media.AudioManager
 import android.net.Uri
+import android.net.wifi.ScanResult
+import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcel
 import android.provider.Telephony
 import android.telephony.SmsManager
+import android.util.Log
 import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -23,6 +26,11 @@ import org.greenrobot.eventbus.ThreadMode
 
 
 class JeevesService() : Service(), LocationListener {
+
+    val LOG_TAG = this::class.java.simpleName
+    private var needLocationSMSToSend: Boolean = false
+    private var currentSMSMessageEvent: SMSMessageEvent? = null
+    private var locationManager: LocationManager? = null
 
     lateinit var location: Location
     var brReceiver: SMSReceiver = SMSReceiver()
@@ -51,43 +59,93 @@ class JeevesService() : Service(), LocationListener {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
-        when (smsMessageEvent.message.decapitalize()) {
-            "call" -> {
-                callPhone(smsMessageEvent)
+        currentSMSMessageEvent = smsMessageEvent
+        try {
+            when (smsMessageEvent.message.toLowerCase()) {
+                "call" -> {
+                    callPhone()
+                }
+                "location" -> {
+                    sendLocation()
+                }
+                "no sound" -> {
+                    setSoundToNoSound()
+                }
+                "sound" -> {
+                    setSoundToNormal()
+                }
+                "wifi networks" -> {
+                    sendWifiNetworks()
+                }
             }
-            "location" -> {
-                sendLocation(smsMessageEvent)
-            }
-            "no sound" -> {
-                setSoundToNoSound(smsMessageEvent)
-            }
-            "sound" -> {
-                setSoundToNormal(smsMessageEvent)
-            }
+        } catch (e: Exception) {
+            currentSMSMessageEvent = null
         }
     }
 
-    private fun setSoundToNormal(smsMessageEvent: SMSMessageEvent) {
+    @SuppressLint("MissingPermission")
+    private fun sendWifiNetworks() {
+        val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiNetworks = wifiManager.scanResults
+        wifiNetworks.sortByDescending { it.level }
+        sendWifiNetworksSMS(wifiNetworks)
+    }
+
+    private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>) {
+        try {
+            var message = ""
+            var i = 0
+            for (network in wifiNetworks) {
+                if (i < 5) {
+                    val level = WifiManager.calculateSignalLevel(network.level, 100)
+                    Log.d(LOG_TAG, "${network.SSID}: ${level}%")
+                    message += "${network.SSID}: ${level}%\n"
+                    i++
+                }
+            }
+
+            val sms = SmsManager.getDefault()
+            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
+    }
+
+
+    private fun setSoundToNormal() {
         val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
     }
 
-    private fun setSoundToNoSound(smsMessageEvent: SMSMessageEvent) {
+    private fun setSoundToNoSound() {
         val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
     }
 
     @SuppressLint("MissingPermission")
-    private fun sendLocation(smsMessageEvent: SMSMessageEvent) {
-        val locationManager = getLocationManager()
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    private fun sendLocation() {
+        try {
+            needLocationSMSToSend = true
+            updateLocation()
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+            needLocationSMSToSend = false
+        }
+    }
 
-        val sms = SmsManager.getDefault()
-        val batteryPct = getBatteryLevel()
-        var locationString: String = "Accuracy: ${location.accuracy} Power:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
-        sms.sendTextMessage(smsMessageEvent.phone, null, locationString, null, null)
 
-        locationManager.removeUpdates(this)
+    private fun sendLocationSMS() {
+        try {
+            if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
+                val sms = SmsManager.getDefault()
+                val batteryPct = getBatteryLevel()
+                var locationString: String = "Accuracy: ${location.accuracy} Battery:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
+                sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, locationString, null, null)
+            }
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
+        needLocationSMSToSend = false
     }
 
     private fun getBatteryLevel(): Int {
@@ -98,47 +156,47 @@ class JeevesService() : Service(), LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun callPhone(smsMessageEvent: SMSMessageEvent) {
+    private fun callPhone() {
         val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:" + smsMessageEvent.phone)
+        intent.data = Uri.parse("tel:" + currentSMSMessageEvent!!.phone)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
 
     override fun onLocationChanged(p0: Location?) {
         location = p0!!
+        sendLocationSMS()
+        locationManager?.removeUpdates(this)
     }
 
     @SuppressLint("MissingPermission")
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-        val locationManager: LocationManager = getLocationManager()
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        updateLocation()
     }
 
     @SuppressLint("MissingPermission")
     override fun onProviderEnabled(p0: String?) {
-        val locationManager: LocationManager = getLocationManager()
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        updateLocation()
     }
 
     @SuppressLint("MissingPermission")
     override fun onProviderDisabled(p0: String?) {
-        val locationManager: LocationManager = getLocationManager()
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocationManager(): LocationManager {
-        val locationManager: LocationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private fun updateLocation() {
+        try {
+            locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                5000,
-                10F,
-                this
-        );
-        return locationManager
+            locationManager!!.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    5000,
+                    10F,
+                    this
+            );
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
-
 
 }

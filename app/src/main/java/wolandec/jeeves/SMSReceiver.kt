@@ -15,9 +15,11 @@ import org.greenrobot.eventbus.EventBus
 
 class SMSReceiver() : BroadcastReceiver() {
 
+    val LOG_TAG = this::class.java.simpleName
+
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        Log.d("Receive", intent?.getAction())
+        Log.d(LOG_TAG, intent?.getAction())
 
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
                 intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON")) {
