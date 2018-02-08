@@ -24,8 +24,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun registerBroadcastService() {
-        val i = Intent("wolandec.jeeves.BroadcastService")
-        i.setClass(this, BroadcastService::class.java!!)
+        val i = Intent("wolandec.jeeves.JeevesService")
+        i.setClass(this, JeevesService::class.java!!)
         try {
             this!!.startService(i)
         } catch (e: Exception) {

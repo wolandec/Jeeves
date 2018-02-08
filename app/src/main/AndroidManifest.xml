@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -41,7 +43,7 @@
         <activity android:name=".CallActivity" />
 
         <service
-            android:name=".BroadcastService"
+            android:name=".JeevesService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

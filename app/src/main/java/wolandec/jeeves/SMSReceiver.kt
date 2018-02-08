@@ -21,8 +21,8 @@ class SMSReceiver() : BroadcastReceiver() {
 
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
                 intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON")) {
-            val i = Intent("wolandec.jeeves.BroadcastService")
-            i.setClass(context, BroadcastService::class.java!!)
+            val i = Intent("wolandec.jeeves.JeevesService")
+            i.setClass(context, JeevesService::class.java!!)
             try {
                 context!!.startService(i)
             } catch (e: Exception) {
