@@ -6,7 +6,7 @@
     <string name="location_default_sms">Где</string>
     <string name="location_sms_text_lable">Текст СМС для получения координат</string>
 
-    <string name="call_label">Обратный звоно</string>
+    <string name="call_label">Обратный звонок</string>
     <string name="call_sms_text_lable">Текст СМС для обратного звонка</string>
     <string name="call_default_sms">Звонок</string>
     <string name="call_enable">Включено</string>

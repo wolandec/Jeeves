@@ -28,8 +28,6 @@
 
     <string name="on_boot_string">Jeeves woke up.</string>
     <string name="on_stop_string">Jeeves is sleeping.</string>
-    <string name="silent_mode_label">Silent mode</string>
-    <string name="normal_mode_label">Normal mode</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
     <string name="enable_jeeves">Wake up</string>
 
