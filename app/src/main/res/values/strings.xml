@@ -1,24 +1,37 @@
 <resources>
     <string name="app_name">Jeeves</string>
 
-    <string-array name="list_preferences">
-        <item>Location</item>
-        <item>Call</item>
-        <item>Normal mode</item>
-        <item>Silent mode</item>
-        <item>Wi-Fi networks</item>
-    </string-array>
-
     <string name="location_label">Location</string>
     <string name="location_enable">Enable</string>
-    <string name="location_default_sms">Where are you?</string>
-    <string name="location_sms_text_lable">SMS-text to get sms</string>
+    <string name="location_default_sms">Location</string>
+    <string name="location_sms_text_lable">SMS-text to get location</string>
+
     <string name="call_label">Call</string>
     <string name="call_sms_text_lable">SMS-text to call back</string>
     <string name="call_default_sms">Call</string>
-    <string name="on_boot_string">Jeeves is alive.</string>
+    <string name="call_enable">Enable</string>
+
+    <string name="silent_label">Set to vibration mode</string>
+    <string name="silent_sms_text_lable">SMS-text to set to vibration mode</string>
+    <string name="silent_default_sms">Vibration</string>
+    <string name="silent_enable">Enable</string>
+
+    <string name="normal_label">Set to normal mode</string>
+    <string name="normal_sms_text_lable">SMS-text to set to normal mode</string>
+    <string name="normal_default_sms">Normal</string>
+    <string name="normal_enable">Enable</string>
+
+    <string name="wifi_networks_label">Wi-Fi networks</string>
+    <string name="wifi_networks_sms_text_lable">SMS-text to get Wi-Fi networks</string>
+    <string name="wifi_networks_default_sms">Wifi networks</string>
+    <string name="wifi_networks_enable">Enable</string>
+
+    <string name="on_boot_string">Jeeves woke up.</string>
+    <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="silent_mode_label">Silent mode</string>
     <string name="normal_mode_label">Normal mode</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
+    <string name="enable_jeeves">Wake up</string>
+
 
 </resources>

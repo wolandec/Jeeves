@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -16,6 +17,7 @@ import android.os.BatteryManager
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcel
+import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.telephony.SmsManager
 import android.util.Log
@@ -31,6 +33,8 @@ class JeevesService() : Service(), LocationListener {
     private var needLocationSMSToSend: Boolean = false
     private var currentSMSMessageEvent: SMSMessageEvent? = null
     private var locationManager: LocationManager? = null
+    var sharedPref: SharedPreferences? = null
+    var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     lateinit var location: Location
     var brReceiver: SMSReceiver = SMSReceiver()
@@ -53,29 +57,49 @@ class JeevesService() : Service(), LocationListener {
         super.onCreate()
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_LONG).show()
+        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
         registerIntentReceiver()
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
+            if (key=="enable_jeeves"){
+                if (sharedPref?.getBoolean("enable_jeeves",false)==false)
+                    this.stopSelf()
+            }
+        }
+        sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+        unregisterReceiver(brReceiver)
+        Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
         currentSMSMessageEvent = smsMessageEvent
         try {
-            when (smsMessageEvent.message.toLowerCase()) {
-                "call" -> {
-                    callPhone()
+           when (smsMessageEvent.message.toLowerCase()) {
+                sharedPref?.getString("call_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("call_enable",false)==true)
+                        callPhone()
                 }
-                "location" -> {
-                    sendLocation()
+                sharedPref?.getString("location_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("location_enable",false)==true)
+                        sendLocation()
                 }
-                "no sound" -> {
-                    setSoundToNoSound()
+                sharedPref?.getString("silent_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("silent_enable",false)==true)
+                        setSoundToNoSound()
                 }
-                "sound" -> {
-                    setSoundToNormal()
+                sharedPref?.getString("normal_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("normal_enable",false)==true)
+                        setSoundToNormal()
                 }
-                "wifi networks" -> {
-                    sendWifiNetworks()
+                sharedPref?.getString("wifi_networks_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("wifi_networks_enable",false)==true)
+                        sendWifiNetworks()
                 }
             }
         } catch (e: Exception) {

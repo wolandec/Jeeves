@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="enable_jeeves"
+        android:title="@string/enable_jeeves" />
+
+    <PreferenceCategory android:title="@string/location_label">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="location_enable"
+            android:title="@string/location_enable" />
+        <EditTextPreference
+            android:defaultValue="@string/location_default_sms"
+            android:key="location_sms"
+            android:title="@string/location_sms_text_lable" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/call_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="call_enable"
+            android:title="@string/call_enable" />
+        <EditTextPreference
+            android:defaultValue="@string/call_default_sms"
+            android:key="call_sms"
+            android:title="@string/call_sms_text_lable" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/silent_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="silent_enable"
+            android:title="@string/silent_enable" />
+        <EditTextPreference
+            android:defaultValue="@string/silent_default_sms"
+            android:key="silent_sms"
+            android:title="@string/silent_sms_text_lable" />
+    </PreferenceCategory>    
+    
+    <PreferenceCategory android:title="@string/normal_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="normal_enable"
+            android:title="@string/normal_enable" />
+        <EditTextPreference
+            android:defaultValue="@string/normal_default_sms"
+            android:key="normal_sms"
+            android:title="@string/normal_sms_text_lable" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/wifi_networks_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="wifi_networks_enable"
+            android:title="@string/wifi_networks_enable" />
+        <EditTextPreference
+            android:defaultValue="@string/wifi_networks_default_sms"
+            android:key="wifi_networks_sms"
+            android:title="@string/wifi_networks_sms_text_lable" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

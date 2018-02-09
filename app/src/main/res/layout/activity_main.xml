@@ -8,8 +8,15 @@
     android:background="@color/colorPrimaryDark"
     tools:context="wolandec.jeeves.SettingsActivity">
 
-    <ListView
-        android:id="@+id/listView"
+    <!--<ListView-->
+        <!--android:id="@+id/listView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+
+    <fragment
+        android:id="@+id/fragment"
+        android:name="wolandec.jeeves.PrefFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </android.widget.LinearLayout>

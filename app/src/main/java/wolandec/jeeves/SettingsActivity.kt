@@ -4,22 +4,18 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.Toast
 
 
-
-
-class SettingsActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
+class SettingsActivity : AppCompatActivity() {
 
     val LOG_TAG = this::class.java.simpleName
-    var listView: ListView? = null
+    var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     public override fun onStop() {
         super.onStop()
@@ -28,28 +24,20 @@ class SettingsActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        listView = findViewById(R.id.listView)
-        registerBroadcastService()
-        checkDoNotDisturb()
-        fillList()
-        listView?.setOnItemClickListener(this)
-    }
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        if (sharedPref?.getBoolean("enable_jeeves", false) == true) {
+            registerBroadcastService()
+        }
 
-    override fun onItemClick(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        when (position){
-            0 ->{
-                startActivity(Intent(this, LocationActivity::class.java))
-            }
-            1 ->{
-                startActivity(Intent(this, CallActivity::class.java))
+        sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
+            if (key == "enable_jeeves") {
+                if (sharedPref?.getBoolean("enable_jeeves", false) == true)
+                    registerBroadcastService()
             }
         }
-    }
+        sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
 
-    private fun fillList() {
-        val adapter = ArrayAdapter<String>(this,
-                R.layout.row_layout, R.id.label, resources.getStringArray(R.array.list_preferences))
-        listView?.setAdapter(adapter)
+        checkDoNotDisturb()
     }
 
     @SuppressLint("NewApi")
