@@ -3,15 +3,14 @@ package wolandec.jeeves
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 
@@ -19,6 +18,7 @@ import android.widget.Toast
 class SettingsActivity : AppCompatActivity() {
 
     val LOG_TAG = this::class.java.simpleName
+    var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     public override fun onStop() {
@@ -28,12 +28,12 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
         checkPermissions()
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         if (sharedPref?.getBoolean("enable_jeeves", false) == true) {
             registerBroadcastService()
         }
-
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == true)
@@ -44,17 +44,49 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 
-    fun checkPermissions(){
-
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.RECEIVE_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.RECEIVE_SMS,Manifest.permission.CALL_PHONE,Manifest.permission.ACCESS_COARSE_LOCATION),
-                        1)
-        }
+    fun checkPermissions() {
+        checkRegularPermissions()
+        checkOnBootStartupPermission()
         checkDoNotDisturb()
+    }
+
+    private fun checkOnBootStartupPermission() {
+        checkXiaomiOnBootStartupPermission()
+    }
+
+    private fun checkXiaomiOnBootStartupPermission() {
+        if (sharedPref?.getBoolean("started_at_boot", false) == true)
+            return
+
+        val manufacturer = "xiaomi"
+        if (manufacturer.equals(Build.MANUFACTURER, ignoreCase = true)) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.startup_on_boot_dialog_title)
+                .setMessage(R.string.startup_on_boot_dialog_text)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                        val intent = Intent()
+                        intent.component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
+                        startActivity(intent)
+                        Utils.setFlagStartedAtBootToTrue(this@SettingsActivity)
+                })
+                .setNegativeButton(android.R.string.no, null).show()
+        }
+    }
+
+    private fun checkRegularPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_COARSE_LOCATION),
+                    1)
+        }
     }
 
     @SuppressLint("NewApi")

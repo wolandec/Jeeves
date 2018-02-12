@@ -30,6 +30,8 @@
     <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
     <string name="enable_jeeves">Wake up</string>
+    <string name="startup_on_boot_dialog_title">Autostart at boot</string>
+    <string name="startup_on_boot_dialog_text">Jeeves need to be autostarted at boot, please allow it in the settings.</string>
 
 
 </resources>

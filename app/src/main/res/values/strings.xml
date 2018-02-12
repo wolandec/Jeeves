@@ -30,6 +30,8 @@
     <string name="on_stop_string">Jeeves спит.</string>
     <string name="wifi_net_label">Wi-Fi сети</string>
     <string name="enable_jeeves">Включено</string>
+    <string name="startup_on_boot_dialog_title">Автозапуск для Дживса</string>
+    <string name="startup_on_boot_dialog_text">Для нормальной работы Дживс должен просыпаться при включении устройства, пожалуйста, разрешите ему автоматически запускаться.</string>
 
 
 </resources>

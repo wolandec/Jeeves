@@ -27,6 +27,7 @@ class SMSReceiver() : BroadcastReceiver() {
             i.setClass(context, JeevesService::class.java!!)
             try {
                 context!!.startService(i)
+                Utils.setFlagStartedAtBootToTrue(context)
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             }
@@ -53,4 +54,5 @@ class SMSReceiver() : BroadcastReceiver() {
             }
         }
     }
+
 }
