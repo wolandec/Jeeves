@@ -5,9 +5,11 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -54,37 +56,90 @@ class SettingsActivity : AppCompatActivity() {
         checkXiaomiOnBootStartupPermission()
     }
 
+
     private fun checkXiaomiOnBootStartupPermission() {
         if (sharedPref?.getBoolean("started_at_boot", false) == true)
             return
 
         val manufacturer = "xiaomi"
         if (manufacturer.equals(Build.MANUFACTURER, ignoreCase = true)) {
-        AlertDialog.Builder(this)
-                .setTitle(R.string.startup_on_boot_dialog_title)
-                .setMessage(R.string.startup_on_boot_dialog_text)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.startup_on_boot_dialog_title)
+                    .setMessage(R.string.startup_on_boot_dialog_text)
+                    .setIcon(R.drawable.ic_icon)
+                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
                         val intent = Intent()
                         intent.component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
                         startActivity(intent)
                         Utils.setFlagStartedAtBootToTrue(this@SettingsActivity)
-                })
-                .setNegativeButton(android.R.string.no, null).show()
+                    })
+                    .setNegativeButton(android.R.string.no, null).show()
+        }
+    }
+
+    fun onDisplayPopupMIUIPermissions() {
+        if (Utils.isMIUI() && sharedPref?.getBoolean("miui_perms_are_checked", false) == false) {
+            try {
+                // MIUI 8
+                AlertDialog.Builder(this)
+                        .setTitle(R.string.perm_dialog_title)
+                        .setMessage(R.string.perm_dialog_text)
+                        .setIcon(R.drawable.ic_icon)
+                        .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                            val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                            localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                            localIntent.putExtra("extra_pkgname", getPackageName());
+                            startActivity(localIntent);
+                            Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
+                        })
+                        .setNegativeButton(android.R.string.no, null).show()
+            } catch (e: Exception) {
+                try {
+                    // MIUI 5/6/7
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.perm_dialog_title)
+                            .setMessage(R.string.perm_dialog_text)
+                            .setIcon(R.drawable.ic_icon)
+                            .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                                val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
+                                localIntent.putExtra("extra_pkgname", getPackageName());
+                                startActivity(localIntent);
+                                Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
+                            })
+                            .setNegativeButton(android.R.string.no, null).show()
+
+                } catch (e: Exception) {
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.perm_dialog_title)
+                            .setMessage(R.string.perm_dialog_text)
+                            .setIcon(R.drawable.ic_icon)
+                            .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                val uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+                                Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
+                            })
+                            .setNegativeButton(android.R.string.no, null).show()
+
+                }
+            }
         }
     }
 
     private fun checkRegularPermissions() {
+        onDisplayPopupMIUIPermissions()
+
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
         ) {
-
             ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_COARSE_LOCATION),
+                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_FINE_LOCATION),
                     1)
         }
     }
@@ -97,9 +152,16 @@ class SettingsActivity : AppCompatActivity() {
         val n = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (n.isNotificationPolicyAccessGranted) {
         } else {
-            // Ask the user to grant access
-            val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-            startActivity(intent)
+            // Ask the user to grant accessAlertDialog.Builder(this)
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.dont_disturb_perm_dialog_title)
+                    .setMessage(R.string.dont_disturb_perm_dialog_text)
+                    .setIcon(R.drawable.ic_icon)
+                    .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                        val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                        startActivity(intent)
+                    })
+                    .setNegativeButton(android.R.string.no, null).show()
         }
     }
 

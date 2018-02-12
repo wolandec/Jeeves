@@ -32,6 +32,10 @@
     <string name="enable_jeeves">Включено</string>
     <string name="startup_on_boot_dialog_title">Автозапуск для Дживса</string>
     <string name="startup_on_boot_dialog_text">Для нормальной работы Дживс должен просыпаться при включении устройства, пожалуйста, разрешите ему автоматически запускаться.</string>
+    <string name="dont_disturb_perm_dialog_title">Разрешение для Дживса</string>
+    <string name="dont_disturb_perm_dialog_text">Чтобы иметь возможность изменять режим звонка на \"Без звука\" нужно дать разрешение Дживсу делать это.</string>
+    <string name="perm_dialog_title">Проверьте разрешения</string>
+    <string name="perm_dialog_text">Дживсу требуются некоторые разрешения, убедитесь что во всем списке установлены постоянные разрешения, без запросов.</string>
 
 
 </resources>
