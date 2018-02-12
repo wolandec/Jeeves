@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
 import android.preference.PreferenceManager
+import android.util.Log
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -15,7 +16,10 @@ import java.util.*
  */
 
 class Utils {
+
     companion object {
+        val LOG_TAG = this::class.java.simpleName
+
         fun setFlagStartedAtBootToTrue(context: Context?) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val sharedPrefEditor: SharedPreferences.Editor = sharedPref.edit()
@@ -23,7 +27,7 @@ class Utils {
             sharedPrefEditor.commit()
         }
 
-        fun setMIUIPermsAreChecketToTrue(context: Context?) {
+        fun setMIUIPermsAreCheckedToTrue(context: Context?) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val sharedPrefEditor: SharedPreferences.Editor = sharedPref.edit()
             sharedPrefEditor.putBoolean("miui_perms_are_checked", true)
@@ -45,6 +49,21 @@ class Utils {
 
             }
             return false;
+        }
+
+        fun getMIUIVersion(): String {
+            val device = Build.MANUFACTURER;
+            if (device.equals("Xiaomi")) {
+                try {
+                    val prop = Properties();
+                    prop.load(FileInputStream(File(Environment.getRootDirectory(), "build.prop")));
+                    return prop.getProperty("ro.miui.ui.version.name", null)
+                } catch (e: IOException) {
+                    Log.d(LOG_TAG, e.toString())
+                    return ""
+                }
+            }
+            return ""
         }
 
     }

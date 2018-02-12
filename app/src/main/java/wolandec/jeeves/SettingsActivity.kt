@@ -5,15 +5,14 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 
 
@@ -77,25 +76,13 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+
     fun onDisplayPopupMIUIPermissions() {
         if (Utils.isMIUI() && sharedPref?.getBoolean("miui_perms_are_checked", false) == false) {
             try {
-                // MIUI 8
-                AlertDialog.Builder(this)
-                        .setTitle(R.string.perm_dialog_title)
-                        .setMessage(R.string.perm_dialog_text)
-                        .setIcon(R.drawable.ic_icon)
-                        .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
-                            val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
-                            localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
-                            localIntent.putExtra("extra_pkgname", getPackageName());
-                            startActivity(localIntent);
-                            Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
-                        })
-                        .setNegativeButton(android.R.string.no, null).show()
-            } catch (e: Exception) {
-                try {
-                    // MIUI 5/6/7
+                if (Utils.getMIUIVersion().equals("V5") ||
+                        Utils.getMIUIVersion().equals("V6") ||
+                        Utils.getMIUIVersion().equals("V7")) {
                     AlertDialog.Builder(this)
                             .setTitle(R.string.perm_dialog_title)
                             .setMessage(R.string.perm_dialog_text)
@@ -105,25 +92,28 @@ class SettingsActivity : AppCompatActivity() {
                                 localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
                                 localIntent.putExtra("extra_pkgname", getPackageName());
                                 startActivity(localIntent);
-                                Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
+                                Utils.setMIUIPermsAreCheckedToTrue(this@SettingsActivity)
                             })
                             .setNegativeButton(android.R.string.no, null).show()
 
-                } catch (e: Exception) {
+                }
+                if (Utils.getMIUIVersion().equals("V8")) {
+                    // MIUI 8
                     AlertDialog.Builder(this)
                             .setTitle(R.string.perm_dialog_title)
                             .setMessage(R.string.perm_dialog_text)
                             .setIcon(R.drawable.ic_icon)
                             .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                val uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                                Utils.setMIUIPermsAreChecketToTrue(this@SettingsActivity)
+                                val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                                localIntent.putExtra("extra_pkgname", getPackageName());
+                                startActivity(localIntent);
+                                Utils.setMIUIPermsAreCheckedToTrue(this@SettingsActivity)
                             })
                             .setNegativeButton(android.R.string.no, null).show()
-
                 }
+            } catch (e: Exception) {
+                Log.d(LOG_TAG, e.toString())
             }
         }
     }
