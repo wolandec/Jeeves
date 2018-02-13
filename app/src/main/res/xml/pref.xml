@@ -3,14 +3,15 @@
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="enable_jeeves"
-        android:title="@string/enable_jeeves" />
+        android:title="@string/enable_jeeves"/>
 
     <PreferenceCategory android:title="@string/location_label">
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="location_enable"
-            android:summary="@string/location_enable" />
+            android:summary="@string/location_enable"
+            android:icon="@drawable/ic_near_me_black_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/location_default_sms"
             android:key="location_sms"
@@ -22,7 +23,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="call_enable"
-            android:summary="@string/call_enable" />
+            android:summary="@string/call_enable"
+            android:icon="@drawable/ic_call_blue_grey_900_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/call_default_sms"
             android:key="call_sms"
@@ -33,18 +35,19 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="silent_enable"
-            android:summary="@string/silent_enable" />
+            android:summary="@string/silent_enable"
+            android:icon="@drawable/ic_vibration_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/silent_default_sms"
             android:key="silent_sms"
             android:summary="@string/silent_sms_text_lable" />
     </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/normal_label">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="normal_enable"
-            android:summary="@string/normal_enable" />
+            android:summary="@string/normal_enable"
+            android:icon="@drawable/ic_volume_up_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/normal_default_sms"
             android:key="normal_sms"
@@ -55,7 +58,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="wifi_networks_enable"
-            android:summary="@string/wifi_networks_enable" />
+            android:summary="@string/wifi_networks_enable"
+            android:icon="@drawable/ic_signal_wifi_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/wifi_networks_default_sms"
             android:key="wifi_networks_sms"
