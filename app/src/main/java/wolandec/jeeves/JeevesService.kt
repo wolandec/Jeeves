@@ -67,7 +67,6 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
-//        proceedSMS(SMSMessageEvent("2","Отчёт"))
     }
 
     override fun onDestroy() {
@@ -129,55 +128,49 @@ class JeevesService() : Service(), LocationListener {
     }
 
     fun getHumanWiFiStatus(): String {
-        var status: String = ""
         try {
             val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
             when (wifiManager.wifiState) {
                 WifiManager.WIFI_STATE_DISABLED -> {
-                    status = getString(R.string.wifi_state_disabled)
+                    return getString(R.string.wifi_state_disabled)
                 }
                 WifiManager.WIFI_STATE_DISABLING -> {
-                    status = getString(R.string.wifi_state_disabling)
+                    return getString(R.string.wifi_state_disabling)
                 }
                 WifiManager.WIFI_STATE_ENABLED -> {
-                    status = getString(R.string.wifi_state_enabled)
+                    return getString(R.string.wifi_state_enabled)
                 }
                 WifiManager.WIFI_STATE_ENABLING -> {
-                    status = getString(R.string.wifi_state_enabling)
+                    return getString(R.string.wifi_state_enabling)
                 }
             }
-        }
-        catch(e: Exception){
+        } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
-        return status
+        return ""
     }
 
 
     private fun sendReport() {
-        try {
-            var wifiNetworks = getWiFiNetworks()
-            if (wifiNetworks?.size!! > 2)
-                wifiNetworks = wifiNetworks?.subList(0, 2)
-            val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
+        var wifiNetworks = getWiFiNetworks()
+        if (wifiNetworks?.size!! > 2)
+            wifiNetworks = wifiNetworks?.subList(0, 2)
+        val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
 
-            val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val mode = audioManager.ringerMode
-            val ringerMode = getHumanRingerMode(mode)
+        val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val mode = audioManager.ringerMode
+        val ringerMode = getHumanRingerMode(mode)
 
-            val batteryPct = getBatteryLevel()
+        val batteryPct = getBatteryLevel()
 
-            val sms = SmsManager.getDefault()
-            val wifiStatus = getHumanWiFiStatus()
-            var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n " +
-                    "${getString(R.string.battery)}:${batteryPct}%\n " +
-                    "${getString(R.string.wifi_label)}:${wifiStatus}\n${wifiMessage} "
-            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
-        }
-        catch (e: Exception){
-            Log.d(LOG_TAG, e.toString())
-        }
+        val sms = SmsManager.getDefault()
+        val wifiStatus = getHumanWiFiStatus()
+        var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n " +
+                "${getString(R.string.battery)}:${batteryPct}%\n " +
+                "${wifiMessage} "
+        message = Utils.transliterate(message)
+        sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
     }
 
     @SuppressLint("MissingPermission")
@@ -196,7 +189,7 @@ class JeevesService() : Service(), LocationListener {
     private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>) {
         try {
             var message = prepareWiFiNetworksString(wifiNetworks)
-
+            message = Utils.transliterate(message)
             val sms = SmsManager.getDefault()
             sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
         } catch (e: Exception) {
