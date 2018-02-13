@@ -26,6 +26,11 @@
     <string name="wifi_networks_default_sms">Wifi сети</string>
     <string name="wifi_networks_enable">Включено</string>
 
+    <string name="report_label">Быстрый отчёт</string>
+    <string name="report_sms_text_lable">Текст СМС для получения отчёта</string>
+    <string name="report_default_sms">Отчёт</string>
+    <string name="report_enable">Включено</string>
+
     <string name="on_boot_string">Jeeves проснулся.</string>
     <string name="on_stop_string">Jeeves спит.</string>
     <string name="wifi_net_label">Wi-Fi сети</string>
@@ -37,5 +42,17 @@
     <string name="perm_dialog_title">Проверьте разрешения</string>
     <string name="perm_dialog_text">Дживсу требуются некоторые разрешения, убедитесь что во всем списке установлены постоянные разрешения, без запросов.</string>
 
+    <string name="accuracy">Точность,м</string>
+    <string name="battery">Батарея</string>
+    <string name="ringer_mode_vibrate">Вибро</string>
+    <string name="ringer_mode_normal">Обычный</string>
+    <string name="ringer_mode_silent">Без звука</string>
+    <string name="ringer_mode">Режим</string>
+
+    <string name="wifi_state_disabled">Выключен</string>
+    <string name="wifi_state_disabling">Выключается</string>
+    <string name="wifi_state_enabled">Включен</string>
+    <string name="wifi_state_enabling">Включается</string>
+    <string name="wifi_label">WiFi</string>
 
 </resources>

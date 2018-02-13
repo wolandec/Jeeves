@@ -42,6 +42,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
+
     }
 
     fun checkPermissions() {

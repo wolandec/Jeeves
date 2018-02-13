@@ -2,6 +2,7 @@ package wolandec.jeeves
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.media.AudioManager
 import android.os.Build
 import android.os.Environment
 import android.preference.PreferenceManager

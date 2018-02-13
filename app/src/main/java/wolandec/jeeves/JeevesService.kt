@@ -61,12 +61,13 @@ class JeevesService() : Service(), LocationListener {
         registerIntentReceiver()
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
-            if (key=="enable_jeeves"){
-                if (sharedPref?.getBoolean("enable_jeeves",false)==false)
+            if (key == "enable_jeeves") {
+                if (sharedPref?.getBoolean("enable_jeeves", false) == false)
                     this.stopSelf()
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
+//        proceedSMS(SMSMessageEvent("2","Отчёт"))
     }
 
     override fun onDestroy() {
@@ -80,26 +81,30 @@ class JeevesService() : Service(), LocationListener {
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
         currentSMSMessageEvent = smsMessageEvent
         try {
-           when (smsMessageEvent.message.toLowerCase()) {
+            when (smsMessageEvent.message.toLowerCase()) {
                 sharedPref?.getString("call_sms", "")?.toLowerCase() -> {
-                    if (sharedPref?.getBoolean("call_enable",false)==true)
+                    if (sharedPref?.getBoolean("call_enable", false) == true)
                         callPhone()
                 }
                 sharedPref?.getString("location_sms", "")?.toLowerCase() -> {
-                    if (sharedPref?.getBoolean("location_enable",false)==true)
+                    if (sharedPref?.getBoolean("location_enable", false) == true)
                         sendLocation()
                 }
                 sharedPref?.getString("silent_sms", "")?.toLowerCase() -> {
-                    if (sharedPref?.getBoolean("silent_enable",false)==true)
+                    if (sharedPref?.getBoolean("silent_enable", false) == true)
                         setSoundToNoSound()
                 }
                 sharedPref?.getString("normal_sms", "")?.toLowerCase() -> {
-                    if (sharedPref?.getBoolean("normal_enable",false)==true)
+                    if (sharedPref?.getBoolean("normal_enable", false) == true)
                         setSoundToNormal()
                 }
                 sharedPref?.getString("wifi_networks_sms", "")?.toLowerCase() -> {
-                    if (sharedPref?.getBoolean("wifi_networks_enable",false)==true)
+                    if (sharedPref?.getBoolean("wifi_networks_enable", false) == true)
                         sendWifiNetworks()
+                }
+                sharedPref?.getString("report_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("report_enable", false) == true)
+                        sendReport()
                 }
             }
         } catch (e: Exception) {
@@ -107,32 +112,111 @@ class JeevesService() : Service(), LocationListener {
         }
     }
 
+
+    fun getHumanRingerMode(ringerMode: Int): String {
+        when (ringerMode) {
+            AudioManager.RINGER_MODE_VIBRATE -> {
+                return getString(R.string.ringer_mode_vibrate)
+            }
+            AudioManager.RINGER_MODE_NORMAL -> {
+                return getString(R.string.ringer_mode_normal)
+            }
+            AudioManager.RINGER_MODE_SILENT -> {
+                return getString(R.string.ringer_mode_silent)
+            }
+        }
+        return ""
+    }
+
+    fun getHumanWiFiStatus(): String {
+        var status: String = ""
+        try {
+            val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+            when (wifiManager.wifiState) {
+                WifiManager.WIFI_STATE_DISABLED -> {
+                    status = getString(R.string.wifi_state_disabled)
+                }
+                WifiManager.WIFI_STATE_DISABLING -> {
+                    status = getString(R.string.wifi_state_disabling)
+                }
+                WifiManager.WIFI_STATE_ENABLED -> {
+                    status = getString(R.string.wifi_state_enabled)
+                }
+                WifiManager.WIFI_STATE_ENABLING -> {
+                    status = getString(R.string.wifi_state_enabling)
+                }
+            }
+        }
+        catch(e: Exception){
+            Log.d(LOG_TAG, e.toString())
+        }
+        return status
+    }
+
+
+    private fun sendReport() {
+        try {
+            var wifiNetworks = getWiFiNetworks()
+            if (wifiNetworks?.size!! > 2)
+                wifiNetworks = wifiNetworks?.subList(0, 2)
+            val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
+
+            val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val mode = audioManager.ringerMode
+            val ringerMode = getHumanRingerMode(mode)
+
+            val batteryPct = getBatteryLevel()
+
+            val sms = SmsManager.getDefault()
+            val wifiStatus = getHumanWiFiStatus()
+            var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n " +
+                    "${getString(R.string.battery)}:${batteryPct}%\n " +
+                    "${getString(R.string.wifi_label)}:${wifiStatus}\n${wifiMessage} "
+            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
+        }
+        catch (e: Exception){
+            Log.d(LOG_TAG, e.toString())
+        }
+    }
+
     @SuppressLint("MissingPermission")
     private fun sendWifiNetworks() {
+        val wifiNetworks = getWiFiNetworks()
+        sendWifiNetworksSMS(wifiNetworks!!)
+    }
+
+    private fun getWiFiNetworks(): List<ScanResult>? {
         val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiNetworks = wifiManager.scanResults
         wifiNetworks.sortByDescending { it.level }
-        sendWifiNetworksSMS(wifiNetworks)
+        return wifiNetworks
     }
 
     private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>) {
         try {
-            var message = ""
-            var i = 0
-            for (network in wifiNetworks) {
-                if (i < 5) {
-                    val level = WifiManager.calculateSignalLevel(network.level, 100)
-                    Log.d(LOG_TAG, "${network.SSID}: ${level}%")
-                    message += "${network.SSID}: ${level}%\n"
-                    i++
-                }
-            }
+            var message = prepareWiFiNetworksString(wifiNetworks)
 
             val sms = SmsManager.getDefault()
             sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
+    }
+
+    private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>): String {
+        val wifiStatus = getHumanWiFiStatus()
+        var message = "${getString(R.string.wifi_label)}:${wifiStatus}\n\n"
+        var i = 0
+        for (network in wifiNetworks) {
+            if (i < 5) {
+                val level = WifiManager.calculateSignalLevel(network.level, 100)
+                Log.d(LOG_TAG, "${network.SSID}: ${level}%")
+                message += "${network.SSID}: ${level}%\n"
+                i++
+            }
+        }
+        return message
     }
 
 
@@ -163,7 +247,7 @@ class JeevesService() : Service(), LocationListener {
             if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
                 val sms = SmsManager.getDefault()
                 val batteryPct = getBatteryLevel()
-                var locationString: String = "Accuracy: ${location.accuracy} Battery:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
+                var locationString: String = "${R.string.accuracy}: ${location.accuracy} ${R.string.battery}:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
                 sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, locationString, null, null)
             }
         } catch (e: Exception) {

@@ -66,4 +66,16 @@
             android:summary="@string/wifi_networks_sms_text_lable" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/report_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="report_enable"
+            android:summary="@string/report_enable"
+            android:icon="@drawable/ic_folder_black_24dp"/>
+        <EditTextPreference
+            android:defaultValue="@string/report_default_sms"
+            android:key="report_sms"
+            android:summary="@string/report_sms_text_lable" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

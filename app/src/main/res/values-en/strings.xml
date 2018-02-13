@@ -26,6 +26,11 @@
     <string name="wifi_networks_default_sms">Wifi networks</string>
     <string name="wifi_networks_enable">Enable</string>
 
+    <string name="report_label">Fast report</string>
+    <string name="report_sms_text_lable">SMS-text to get report</string>
+    <string name="report_default_sms">Report</string>
+    <string name="report_enable">Enable</string>
+
     <string name="on_boot_string">Jeeves woke up.</string>
     <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
@@ -34,8 +39,20 @@
     <string name="startup_on_boot_dialog_text">Jeeves need to be autostarted at boot, please allow it in the settings.</string>
     <string name="dont_disturb_perm_dialog_title">Permission for Jeeves</string>
     <string name="dont_disturb_perm_dialog_text">To enable turn your device to vibration mode, please, give a permission to Jeeves.</string>
-    <string name="perm_dialog_title">Проверьте разрешения</string>
-    <string name="perm_dialog_text">Дживсу требуются некоторые разрешения, убедитесь что во всем списке установлены постоянные разрешения, без запросов.</string>
+    <string name="perm_dialog_title">Check permissions</string>
+    <string name="perm_dialog_text">Jeeves needs to have some permissions, please, check that the always mode is selected.</string>
 
+    <string name="accuracy">Accuracy,m</string>
+    <string name="battery">Battery</string>
+    <string name="ringer_mode_vibrate">Vibro</string>
+    <string name="ringer_mode_normal">Normal</string>
+    <string name="ringer_mode_silent">Silent</string>
+    <string name="ringer_mode">Mode</string>
+
+    <string name="wifi_state_disabled">Disabled</string>
+    <string name="wifi_state_disabling">Disabling</string>
+    <string name="wifi_state_enabled">Enabled</string>
+    <string name="wifi_state_enabling">Enabling</string>
+    <string name="wifi_label">WiFi</string>
 
 </resources>
