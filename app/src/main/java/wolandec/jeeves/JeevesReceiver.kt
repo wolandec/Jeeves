@@ -50,7 +50,7 @@ class JeevesReceiver() : BroadcastReceiver() {
         }
     }
 
-    private fun startJeevesService(context: Context?) {
+    fun startJeevesService(context: Context?) {
         val i = Intent("wolandec.jeeves.JeevesService")
         i.setClass(context, JeevesService::class.java!!)
         try {

@@ -47,8 +47,8 @@ class JeevesService() : Service(), LocationListener {
     private fun registerIntentReceiver() {
         registerReceiver(brReceiver,
                 IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
-        registerReceiver(brReceiver,
-                IntentFilter("android.intent.action.MY_PACKAGE_REPLACED"))
+//        registerReceiver(brReceiver,
+//                IntentFilter("android.intent.action.MY_PACKAGE_REPLACED"))
     }
 
     override fun onBind(intent: Intent): IBinder? {
