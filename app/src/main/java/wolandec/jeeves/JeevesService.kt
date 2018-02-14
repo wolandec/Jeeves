@@ -36,7 +36,7 @@ class JeevesService() : Service(), LocationListener {
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     lateinit var location: Location
-    var brReceiver: SMSReceiver = SMSReceiver()
+    var brReceiver: JeevesReceiver = JeevesReceiver()
 
     constructor(parcel: Parcel) : this() {
         location = parcel.readParcelable(Location::class.java.classLoader)
@@ -45,6 +45,8 @@ class JeevesService() : Service(), LocationListener {
     private fun registerIntentReceiver() {
         registerReceiver(brReceiver,
                 IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
+        registerReceiver(brReceiver,
+                IntentFilter("android.intent.action.MY_PACKAGE_REPLACED"))
     }
 
     override fun onBind(intent: Intent): IBinder? {

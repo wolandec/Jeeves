@@ -42,6 +42,7 @@ class SettingsActivity : AppCompatActivity() {
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == true)
+                    println("")
                     registerBroadcastService()
             }
         }

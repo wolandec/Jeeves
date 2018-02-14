@@ -13,24 +13,19 @@ import org.greenrobot.eventbus.EventBus
  * Created by wolandec on 31.01.2018.
  */
 
-class SMSReceiver() : BroadcastReceiver() {
+class JeevesReceiver() : BroadcastReceiver() {
 
     val LOG_TAG = this::class.java.simpleName
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        Log.d(LOG_TAG, intent?.getAction())
-
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
                 intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON")) {
-            val i = Intent("wolandec.jeeves.JeevesService")
-            i.setClass(context, JeevesService::class.java!!)
-            try {
-                context!!.startService(i)
-                Utils.setFlagStartedAtBootToTrue(context)
-            } catch (e: Exception) {
-                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-            }
+            startJeevesService(context)
+        }
+
+        if (intent?.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED")) {
+            startJeevesService(context)
         }
 
         if (intent?.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
@@ -52,6 +47,17 @@ class SMSReceiver() : BroadcastReceiver() {
                     Log.d("Exception caught", e.message);
                 }
             }
+        }
+    }
+
+    private fun startJeevesService(context: Context?) {
+        val i = Intent("wolandec.jeeves.JeevesService")
+        i.setClass(context, JeevesService::class.java!!)
+        try {
+            context!!.startService(i)
+            Utils.setFlagStartedAtBootToTrue(context)
+        } catch (e: Exception) {
+            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         }
     }
 
