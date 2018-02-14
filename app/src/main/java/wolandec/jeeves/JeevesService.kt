@@ -2,6 +2,7 @@ package wolandec.jeeves
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
@@ -18,6 +19,7 @@ import android.net.wifi.WifiManager
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Telephony
+import android.support.v4.app.NotificationCompat
 import android.telephony.SmsManager
 import android.util.Log
 import android.widget.Toast
@@ -56,6 +58,10 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
+
+        val restartServiceIntent = Intent(getApplicationContext(), this::class.java)
+        restartServiceIntent.setPackage(getPackageName())
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
@@ -77,17 +83,32 @@ class JeevesService() : Service(), LocationListener {
             Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
         }
         else{
-            restartService()
+//            restartService()
         }
         super.onDestroy()
     }
 
+    fun getNotification(): Notification? {
+        val builder = NotificationCompat.Builder(applicationContext, "wolandec.jeeves")
+                .setDefaults(0)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.ready_to_work))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(PendingIntent.getActivity(applicationContext,
+                        1,
+                        Intent(applicationContext, SettingsActivity::class.java), 0))
+        return builder.build();
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForeground(100232,
+                getNotification());
         return START_STICKY
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        restartService()
+//        restartService()
         super.onTaskRemoved(rootIntent);
     }
 

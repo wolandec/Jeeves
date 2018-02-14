@@ -17,8 +17,6 @@ import android.util.Log
 import android.widget.Toast
 
 
-
-
 class SettingsActivity : AppCompatActivity() {
 
     val LOG_TAG = this::class.java.simpleName
@@ -43,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == true)
                     println("")
-                    registerBroadcastService()
+                registerBroadcastService()
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);

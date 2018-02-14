@@ -54,5 +54,6 @@
     <string name="wifi_state_enabled">Enabled</string>
     <string name="wifi_state_enabling">Enabling</string>
     <string name="wifi_label">WiFi</string>
+    <string name="ready_to_work">Ready to work</string>
 
 </resources>
