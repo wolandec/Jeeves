@@ -1,6 +1,8 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -13,10 +15,7 @@ import android.media.AudioManager
 import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
-import android.os.BatteryManager
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcel
+import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.telephony.SmsManager
@@ -70,10 +69,36 @@ class JeevesService() : Service(), LocationListener {
     }
 
     override fun onDestroy() {
+        if (sharedPref?.getBoolean("enable_jeeves", false) == false) {
+            sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+            unregisterReceiver(brReceiver)
+            Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
+        }
+        else{
+            restartService()
+        }
         super.onDestroy()
-        sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-        unregisterReceiver(brReceiver)
-        Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        restartService()
+        super.onTaskRemoved(rootIntent);
+    }
+
+    private fun restartService() {
+        val restartServiceIntent = Intent(getApplicationContext(), this::class.java)
+        restartServiceIntent.setPackage(getPackageName())
+
+        val restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT)
+        val alarmService = getApplicationContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmService.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                restartServicePendingIntent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
