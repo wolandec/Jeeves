@@ -19,7 +19,6 @@ import android.provider.Telephony
 import android.support.v4.app.NotificationCompat
 import android.telephony.SmsManager
 import android.util.Log
-import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -28,11 +27,15 @@ import org.greenrobot.eventbus.ThreadMode
 class JeevesService() : Service(), LocationListener {
 
     val LOG_TAG = this::class.java.simpleName
+    val NOTIFY_ID = 1002
+
+
     private var needLocationSMSToSend: Boolean = false
     private var currentSMSMessageEvent: SMSMessageEvent? = null
     private var locationManager: LocationManager? = null
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    private var intent: Intent? = null
 
     private var notifManager: NotificationManager? = null
 
@@ -58,38 +61,30 @@ class JeevesService() : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
 
-        val restartServiceIntent = Intent(getApplicationContext(), this::class.java)
-        restartServiceIntent.setPackage(getPackageName())
-
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
         registerIntentReceiver()
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == false)
-                    this.stopSelf()
+                    stopSelf()
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
     }
 
     override fun onDestroy() {
-        if (sharedPref?.getBoolean("enable_jeeves", false) == false) {
-            sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-            unregisterReceiver(brReceiver)
-            Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
-        } else {
-//            restartService()
-        }
+        sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+        unregisterReceiver(brReceiver)
+//        Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
 
 
     @SuppressLint("NewApi")
     fun getNotification(): Notification? {
-        val NOTIFY_ID = 1002
 
         val notiManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         var builder: NotificationCompat.Builder
@@ -139,26 +134,26 @@ class JeevesService() : Service(), LocationListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(100232,
-                getNotification());
-        return START_STICKY
+        this.intent = intent
+        if (sharedPref?.getBoolean("enable_jeeves", false) != false) {
+            startForeground(NOTIFY_ID, getNotification())
+        } else {
+            Log.i(LOG_TAG, "start")
+            val CHANNEL_ID = packageName+"_14"
+            val mBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+
+                    .setContentTitle("My notification")
+                    .setContentText("Hello World!")
+
+            startForeground(-1, mBuilder.build())
+            stopForeground(true)
+            stopSelf()
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-//        restartService()
         super.onTaskRemoved(rootIntent);
-    }
-
-    private fun restartService() {
-        val restartServiceIntent = Intent(getApplicationContext(), this::class.java)
-        restartServiceIntent.setPackage(getPackageName())
-
-        val restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT)
-        val alarmService = getApplicationContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmService.set(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 1000,
-                restartServicePendingIntent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
