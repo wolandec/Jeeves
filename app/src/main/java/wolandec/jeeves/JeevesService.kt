@@ -1,7 +1,7 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -13,10 +13,12 @@ import android.media.AudioManager
 import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
-import android.os.*
+import android.os.BatteryManager
+import android.os.Bundle
+import android.os.IBinder
+import android.os.Parcel
 import android.preference.PreferenceManager
 import android.provider.Telephony
-import android.support.v4.app.NotificationCompat
 import android.telephony.SmsManager
 import android.util.Log
 import org.greenrobot.eventbus.EventBus
@@ -36,8 +38,6 @@ class JeevesService() : Service(), LocationListener {
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
     private var intent: Intent? = null
-
-    private var notifManager: NotificationManager? = null
 
     lateinit var location: Location
     var brReceiver: JeevesReceiver = JeevesReceiver()
@@ -61,95 +61,42 @@ class JeevesService() : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
 
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
+        val notification = Utils.getNotification(this)
+        startForeground(NOTIFY_ID, notification)
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
 //        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
         registerIntentReceiver()
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
-                if (sharedPref?.getBoolean("enable_jeeves", false) == false)
-                    stopSelf()
+                proceedPrefChange()
             }
         }
-        sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
+        sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+    }
+
+    fun proceedPrefChange() {
+        if (sharedPref?.getBoolean("enable_jeeves", false) == false) {
+            stopForeground(true);
+            stopSelf()
+        }
     }
 
     override fun onDestroy() {
         sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
         unregisterReceiver(brReceiver)
+        EventBus.getDefault().unregister(this)
 //        Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
 
-
-    @SuppressLint("NewApi")
-    fun getNotification(): Notification? {
-
-        val notiManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        var builder: NotificationCompat.Builder
-        var intent: Intent
-        var pendingIntent: PendingIntent
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_LOW;
-            val channelId = packageName + "_14"
-            val androidChannel = NotificationChannel(channelId,
-                    packageName, importance);
-            notiManager.createNotificationChannel(androidChannel);
-            var mChannel = notiManager.getNotificationChannel(channelId) as NotificationChannel
-            if (mChannel == null) {
-                mChannel = NotificationChannel(channelId, packageName, importance)
-                mChannel.setDescription(getString(R.string.ready_to_work))
-                mChannel.enableVibration(false)
-                mChannel.setSound(null, null)
-                notifManager?.createNotificationChannel(mChannel)
-            }
-
-            builder = NotificationCompat.Builder(this, channelId)
-
-            intent = Intent(applicationContext, SettingsActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-            builder.setContentTitle(getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_icon)
-                    .setContentText(this.getString(R.string.ready_to_work))
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-                    .setTicker("${getString(R.string.app_name)}: ${getString(R.string.ready_to_work)}")
-        } else {
-            builder = NotificationCompat.Builder(applicationContext, "wolandec.jeeves")
-                    .setDefaults(0)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(getString(R.string.ready_to_work))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(PendingIntent.getActivity(applicationContext,
-                            1,
-                            Intent(applicationContext, SettingsActivity::class.java), 0))
-        }
-
-        return builder.build();
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         this.intent = intent
-        if (sharedPref?.getBoolean("enable_jeeves", false) != false) {
-            startForeground(NOTIFY_ID, getNotification())
-        } else {
-            Log.i(LOG_TAG, "start")
-            val CHANNEL_ID = packageName+"_14"
-            val mBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-
-                    .setContentTitle("My notification")
-                    .setContentText("Hello World!")
-
-            startForeground(-1, mBuilder.build())
-            stopForeground(true)
-            stopSelf()
-        }
-        return super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

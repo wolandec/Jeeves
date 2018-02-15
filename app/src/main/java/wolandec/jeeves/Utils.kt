@@ -1,10 +1,17 @@
 package wolandec.jeeves
 
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
 import android.preference.PreferenceManager
+import android.support.v4.app.NotificationCompat
 import android.util.Log
 import java.io.File
 import java.io.FileInputStream
@@ -84,5 +91,53 @@ class Utils {
             return builder.toString()
         }
 
+        @SuppressLint("NewApi")
+        fun getNotification(context: Context): Notification? {
+
+            val notiManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            var builder: NotificationCompat.Builder
+            var intent: Intent
+            var pendingIntent: PendingIntent
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val importance = NotificationManager.IMPORTANCE_LOW;
+                val channelId = context.packageName + "_14"
+                val androidChannel = NotificationChannel(channelId,
+                        context.packageName, importance);
+                notiManager.createNotificationChannel(androidChannel);
+                var mChannel = notiManager.getNotificationChannel(channelId) as NotificationChannel
+                if (mChannel == null) {
+                    mChannel = NotificationChannel(channelId, context.packageName, importance)
+                    mChannel.setDescription(context.getString(R.string.ready_to_work))
+                    mChannel.enableVibration(false)
+                    mChannel.setSound(null, null)
+                }
+
+                builder = NotificationCompat.Builder(context, channelId)
+
+                intent = Intent(context, SettingsActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+                builder.setContentTitle(context.getString(R.string.app_name))
+                        .setSmallIcon(R.drawable.ic_icon)
+                        .setContentText(context.getString(R.string.ready_to_work))
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setTicker("${context.getString(R.string.app_name)}: ${context.getString(R.string.ready_to_work)}")
+            } else {
+                builder = NotificationCompat.Builder(context, "wolandec.jeeves")
+                        .setDefaults(0)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(context.getString(R.string.app_name))
+                        .setContentText(context.getString(R.string.ready_to_work))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(PendingIntent.getActivity(context,
+                                1,
+                                Intent(context, SettingsActivity::class.java), 0))
+            }
+
+            return builder.build();
+        }
     }
 }
