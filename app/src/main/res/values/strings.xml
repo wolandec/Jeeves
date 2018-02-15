@@ -49,11 +49,14 @@
     <string name="ringer_mode_silent">Без звука</string>
     <string name="ringer_mode">Режим</string>
 
-    <string name="wifi_state_disabled">Выключен</string>
-    <string name="wifi_state_disabling">Выключается</string>
+    <string name="wifi_state_disabled">Отклюсчён</string>
+    <string name="wifi_state_disabling">Отключается</string>
     <string name="wifi_state_enabled">Включен</string>
     <string name="wifi_state_enabling">Включается</string>
     <string name="wifi_label">WiFi</string>
     <string name="ready_to_work">Готов к работе</string>
+    <string name="passwd"></string>
+    <string name="passwd_summary">Если пароль не пустая строка, то все команды нужно будет отсылать в виде: [Пароль] [Команда], например: Пароль Отчёт</string>
+    <string name="passwd_lable">Пароль</string>
 
 </resources>

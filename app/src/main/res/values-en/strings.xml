@@ -55,5 +55,8 @@
     <string name="wifi_state_enabling">Enabling</string>
     <string name="wifi_label">WiFi</string>
     <string name="ready_to_work">Ready to work</string>
+    <string name="passwd"></string>
+    <string name="passwd_summary">If the password is not an empty string, then all commands must be in format: [Password] [Command], for example: Password Report</string>
+    <string name="passwd_lable">Password</string>
 
 </resources>

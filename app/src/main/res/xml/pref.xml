@@ -5,6 +5,12 @@
         android:key="enable_jeeves"
         android:title="@string/enable_jeeves"/>
 
+    <EditTextPreference
+        android:defaultValue="@string/passwd"
+        android:key="passwd"
+        android:title="@string/passwd_lable"
+        android:summary="@string/passwd_summary" />
+
     <PreferenceCategory android:title="@string/location_label">
 
         <CheckBoxPreference
@@ -16,7 +22,7 @@
             android:defaultValue="@string/location_default_sms"
             android:key="location_sms"
             android:singleLine="false"
-            android:summary="@string/location_sms_text_lable" />
+            android:summary="@string/location_sms_text_lable"/>
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/call_label">

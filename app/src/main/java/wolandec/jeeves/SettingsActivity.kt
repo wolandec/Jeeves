@@ -162,7 +162,11 @@ class SettingsActivity : AppCompatActivity() {
         val i = Intent("wolandec.jeeves.JeevesService")
         i.setClass(this, JeevesService::class.java!!)
         try {
-            this!!.startService(i)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this!!.startForegroundService(i)
+            } else {
+                this!!.startService(i)
+            }
         } catch (e: Exception) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }

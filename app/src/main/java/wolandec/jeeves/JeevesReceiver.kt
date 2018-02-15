@@ -3,6 +3,7 @@ package wolandec.jeeves
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.telephony.SmsMessage
 import android.util.Log
 import android.widget.Toast
@@ -54,7 +55,11 @@ class JeevesReceiver() : BroadcastReceiver() {
         val i = Intent("wolandec.jeeves.JeevesService")
         i.setClass(context, JeevesService::class.java!!)
         try {
-            context!!.startService(i)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context!!.startForegroundService(i)
+            } else {
+                context!!.startService(i)
+            }
             Utils.setFlagStartedAtBootToTrue(context)
         } catch (e: Exception) {
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()

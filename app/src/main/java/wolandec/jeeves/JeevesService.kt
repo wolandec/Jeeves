@@ -1,10 +1,7 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.Notification
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -36,6 +33,8 @@ class JeevesService() : Service(), LocationListener {
     private var locationManager: LocationManager? = null
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+
+    private var notifManager: NotificationManager? = null
 
     lateinit var location: Location
     var brReceiver: JeevesReceiver = JeevesReceiver()
@@ -81,23 +80,61 @@ class JeevesService() : Service(), LocationListener {
             sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
             unregisterReceiver(brReceiver)
             Toast.makeText(this, getString(R.string.on_stop_string), Toast.LENGTH_SHORT).show()
-        }
-        else{
+        } else {
 //            restartService()
         }
         super.onDestroy()
     }
 
+
+    @SuppressLint("NewApi")
     fun getNotification(): Notification? {
-        val builder = NotificationCompat.Builder(applicationContext, "wolandec.jeeves")
-                .setDefaults(0)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.ready_to_work))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(PendingIntent.getActivity(applicationContext,
-                        1,
-                        Intent(applicationContext, SettingsActivity::class.java), 0))
+        val NOTIFY_ID = 1002
+
+        val notiManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var builder: NotificationCompat.Builder
+        var intent: Intent
+        var pendingIntent: PendingIntent
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_LOW;
+            val channelId = packageName + "_14"
+            val androidChannel = NotificationChannel(channelId,
+                    packageName, importance);
+            notiManager.createNotificationChannel(androidChannel);
+            var mChannel = notiManager.getNotificationChannel(channelId) as NotificationChannel
+            if (mChannel == null) {
+                mChannel = NotificationChannel(channelId, packageName, importance)
+                mChannel.setDescription(getString(R.string.ready_to_work))
+                mChannel.enableVibration(false)
+                mChannel.setSound(null, null)
+                notifManager?.createNotificationChannel(mChannel)
+            }
+
+            builder = NotificationCompat.Builder(this, channelId)
+
+            intent = Intent(applicationContext, SettingsActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+            builder.setContentTitle(getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_icon)
+                    .setContentText(this.getString(R.string.ready_to_work))
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setTicker("${getString(R.string.app_name)}: ${getString(R.string.ready_to_work)}")
+        } else {
+            builder = NotificationCompat.Builder(applicationContext, "wolandec.jeeves")
+                    .setDefaults(0)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.ready_to_work))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(PendingIntent.getActivity(applicationContext,
+                            1,
+                            Intent(applicationContext, SettingsActivity::class.java), 0))
+        }
+
         return builder.build();
     }
 
@@ -127,29 +164,32 @@ class JeevesService() : Service(), LocationListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun proceedSMS(smsMessageEvent: SMSMessageEvent) {
         currentSMSMessageEvent = smsMessageEvent
+        var pswd = ""
+        if (!sharedPref?.getString("passwd", "").equals(""))
+            pswd = sharedPref?.getString("passwd", "") + " "
         try {
             when (smsMessageEvent.message.toLowerCase()) {
-                sharedPref?.getString("call_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("call_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("call_enable", false) == true)
                         callPhone()
                 }
-                sharedPref?.getString("location_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("location_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("location_enable", false) == true)
                         sendLocation()
                 }
-                sharedPref?.getString("silent_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("silent_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("silent_enable", false) == true)
                         setSoundToNoSound()
                 }
-                sharedPref?.getString("normal_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("normal_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("normal_enable", false) == true)
                         setSoundToNormal()
                 }
-                sharedPref?.getString("wifi_networks_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("wifi_networks_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("wifi_networks_enable", false) == true)
                         sendWifiNetworks()
                 }
-                sharedPref?.getString("report_sms", "")?.toLowerCase() -> {
+                pswd + sharedPref?.getString("report_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("report_enable", false) == true)
                         sendReport()
                 }
