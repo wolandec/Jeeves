@@ -272,6 +272,10 @@ class JeevesService() : Service(), LocationListener {
                 val sms = SmsManager.getDefault()
                 val batteryPct = getBatteryLevel()
                 var locationString: String = "${getString(R.string.accuracy)}: ${location.accuracy} ${getString(R.string.battery)}:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
+                if (locationString.length>70)
+                    locationString = Utils.transliterate(locationString)
+                if (locationString.length>140)
+                    locationString.substring(0,140)
                 sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, locationString, null, null)
             }
         } catch (e: Exception) {
