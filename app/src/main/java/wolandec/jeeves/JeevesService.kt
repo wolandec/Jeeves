@@ -184,7 +184,7 @@ class JeevesService() : Service(), LocationListener {
 
     private fun sendReport() {
         var wifiNetworks = getWiFiNetworks()
-        if (wifiNetworks?.size!! > 2)
+        if (wifiNetworks!=null && wifiNetworks?.size!! > 2)
             wifiNetworks = wifiNetworks?.subList(0, 2)
         val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
 
@@ -206,17 +206,17 @@ class JeevesService() : Service(), LocationListener {
     @SuppressLint("MissingPermission")
     private fun sendWifiNetworks() {
         val wifiNetworks = getWiFiNetworks()
-        sendWifiNetworksSMS(wifiNetworks!!)
+        sendWifiNetworksSMS(wifiNetworks)
     }
 
     private fun getWiFiNetworks(): List<ScanResult>? {
         val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiNetworks = wifiManager.scanResults
-        wifiNetworks.sortByDescending { it.level }
+        wifiNetworks?.sortByDescending { it.level }
         return wifiNetworks
     }
 
-    private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>) {
+    private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>?) {
         try {
             var message = prepareWiFiNetworksString(wifiNetworks)
             message = Utils.transliterate(message)
@@ -227,18 +227,19 @@ class JeevesService() : Service(), LocationListener {
         }
     }
 
-    private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>): String {
+    private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?): String {
         val wifiStatus = getHumanWiFiStatus()
         var message = "${getString(R.string.wifi_label)}:${wifiStatus}\n\n"
         var i = 0
-        for (network in wifiNetworks) {
-            if (i < 5) {
-                val level = WifiManager.calculateSignalLevel(network.level, 100)
-                Log.d(LOG_TAG, "${network.SSID}: ${level}%")
-                message += "${network.SSID}: ${level}%\n"
-                i++
+        if (wifiNetworks != null)
+            for (network in wifiNetworks) {
+                if (i < 5) {
+                    val level = WifiManager.calculateSignalLevel(network.level, 100)
+                    Log.d(LOG_TAG, "${network.SSID}: ${level}%")
+                    message += "${network.SSID}: ${level}%\n"
+                    i++
+                }
             }
-        }
         return message
     }
 
@@ -270,7 +271,7 @@ class JeevesService() : Service(), LocationListener {
             if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
                 val sms = SmsManager.getDefault()
                 val batteryPct = getBatteryLevel()
-                var locationString: String = "${R.string.accuracy}: ${location.accuracy} ${R.string.battery}:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
+                var locationString: String = "${getString(R.string.accuracy)}: ${location.accuracy} ${getString(R.string.battery)}:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
                 sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, locationString, null, null)
             }
         } catch (e: Exception) {

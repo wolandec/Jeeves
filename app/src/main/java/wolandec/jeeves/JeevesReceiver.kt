@@ -23,8 +23,7 @@ class JeevesReceiver() : BroadcastReceiver() {
 
         if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
                 intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON") ||
-                intent?.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED") ||
-                intent?.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
+                intent?.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED")) {
             startJeevesService(context)
         }
 
