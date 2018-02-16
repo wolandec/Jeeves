@@ -20,12 +20,11 @@ class JeevesReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
-                intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON")) {
-            startJeevesService(context)
-        }
 
-        if (intent?.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED")) {
+        if (intent?.getAction().equals("android.intent.action.BOOT_COMPLETED") ||
+                intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON") ||
+                intent?.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED") ||
+                intent?.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
             startJeevesService(context)
         }
 
