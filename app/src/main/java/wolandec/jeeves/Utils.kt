@@ -128,7 +128,7 @@ class Utils {
             } else {
                 builder = NotificationCompat.Builder(context, "wolandec.jeeves")
                         .setDefaults(0)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_icon)
                         .setContentTitle(context.getString(R.string.app_name))
                         .setContentText(context.getString(R.string.ready_to_work))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
