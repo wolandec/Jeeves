@@ -184,7 +184,7 @@ class JeevesService() : Service(), LocationListener {
 
     private fun sendReport() {
         var wifiNetworks = getWiFiNetworks()
-        if (wifiNetworks!=null && wifiNetworks?.size!! > 2)
+        if (wifiNetworks != null && wifiNetworks?.size!! > 2)
             wifiNetworks = wifiNetworks?.subList(0, 2)
         val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
 
@@ -196,10 +196,10 @@ class JeevesService() : Service(), LocationListener {
 
         val sms = SmsManager.getDefault()
         val wifiStatus = getHumanWiFiStatus()
-        var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n " +
-                "${getString(R.string.battery)}:${batteryPct}%\n " +
-                "${wifiMessage} "
-        message = Utils.transliterate(message)
+        var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
+                "${getString(R.string.battery)}:${batteryPct}%\n" +
+                "${wifiMessage}"
+        message = Utils.prepareMessageLength(message)
         sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
     }
 
@@ -219,8 +219,8 @@ class JeevesService() : Service(), LocationListener {
     private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>?) {
         try {
             var message = prepareWiFiNetworksString(wifiNetworks)
-            message = Utils.transliterate(message)
             val sms = SmsManager.getDefault()
+            message = Utils.prepareMessageLength(message)
             sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
@@ -258,7 +258,13 @@ class JeevesService() : Service(), LocationListener {
     private fun sendLocation() {
         try {
             needLocationSMSToSend = true
-            updateLocation()
+            locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+            if (locationManager!!.isProviderEnabled("gps")==true)
+                updateLocation()
+            else{
+                sendLocationSMS()
+            }
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
             needLocationSMSToSend = false
@@ -271,18 +277,19 @@ class JeevesService() : Service(), LocationListener {
             if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
                 val sms = SmsManager.getDefault()
                 val batteryPct = getBatteryLevel()
-                var locationString: String = "${getString(R.string.accuracy)}: ${location.accuracy} ${getString(R.string.battery)}:${batteryPct}%\n https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
-                if (locationString.length>70)
-                    locationString = Utils.transliterate(locationString)
-                if (locationString.length>140)
-                    locationString.substring(0,140)
-                sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, locationString, null, null)
+                var message: String = "${getString(R.string.accuracy)}:${location.accuracy}\n" +
+                        "${getString(R.string.battery)}:${batteryPct}%\n" +
+                        "https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
+                message = Utils.prepareMessageLength(message)
+                sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
             }
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
         needLocationSMSToSend = false
     }
+
+
 
     private fun getBatteryLevel(): Int {
         val iFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)

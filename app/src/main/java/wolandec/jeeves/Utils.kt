@@ -136,8 +136,16 @@ class Utils {
                                 1,
                                 Intent(context, SettingsActivity::class.java), 0))
             }
-
             return builder.build();
+        }
+
+        fun prepareMessageLength(msgString: String): String {
+            var message = msgString
+            if (message.length > 70)
+                message = Utils.transliterate(message)
+            if (message.length > 140)
+                message = message.substring(0, 140)
+            return message
         }
     }
 }
