@@ -67,7 +67,6 @@ class JeevesService() : Service(), LocationListener {
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
         }
-//        Toast.makeText(applicationContext, getString(R.string.on_boot_string), Toast.LENGTH_SHORT).show()
         registerIntentReceiver()
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
 
@@ -77,9 +76,7 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-//        Utils.playAlarm(this)
-        Utils.starBlinkWithFlash(this)
-        Utils.stopBlinkWithFlash(this)
+        startAlarm()
     }
 
     fun proceedPrefChange() {
@@ -138,10 +135,20 @@ class JeevesService() : Service(), LocationListener {
                     if (sharedPref?.getBoolean("report_enable", false) == true)
                         sendReport()
                 }
+                pswd + sharedPref?.getString("find_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("find_enable", false) == true)
+                        startAlarm()
+                }
             }
         } catch (e: Exception) {
             currentSMSMessageEvent = null
         }
+    }
+
+    private fun startAlarm() {
+        val intent = Intent(this,AlarmActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
 

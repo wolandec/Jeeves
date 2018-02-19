@@ -31,6 +31,12 @@
     <string name="report_default_sms">Report</string>
     <string name="report_enable">Enable</string>
 
+    <string name="find_label">Find</string>
+    <string name="find_sms_text_lable">SMS-text to start find process(device
+        make noise at the highest level and blinks)</string>
+    <string name="find_default_sms">Find</string>
+    <string name="find_enable">Enable</string>
+
     <string name="on_boot_string">Jeeves woke up.</string>
     <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="wifi_net_label">Wi-Fi networks</string>

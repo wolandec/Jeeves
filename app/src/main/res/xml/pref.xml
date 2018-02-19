@@ -84,4 +84,16 @@
             android:summary="@string/report_sms_text_lable" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/find_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="find_enable"
+            android:summary="@string/find_enable"
+            android:icon="@drawable/ic_settings_remote_teal_a400_24dp"/>
+        <EditTextPreference
+            android:defaultValue="@string/find_default_sms"
+            android:key="find_sms"
+            android:summary="@string/find_sms_text_lable" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
