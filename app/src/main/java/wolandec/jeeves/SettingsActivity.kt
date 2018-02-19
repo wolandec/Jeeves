@@ -40,11 +40,10 @@ class SettingsActivity : AppCompatActivity() {
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == true)
-                registerBroadcastService()
+                    registerBroadcastService()
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
-
     }
 
     fun checkPermissions() {
@@ -128,10 +127,12 @@ class SettingsActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_FINE_LOCATION),
+                    arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA),
                     1)
         }
     }

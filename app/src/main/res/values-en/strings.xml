@@ -58,5 +58,7 @@
     <string name="passwd"></string>
     <string name="passwd_summary">If the password is not an empty string, then all commands must be in format: [Password] [Command], for example: Password Report</string>
     <string name="passwd_lable">Password</string>
+    <string name="alarm_content">Warning! Alarm is initiated.</string>
+    <string name="alarm_button">Turn off</string>
 
 </resources>

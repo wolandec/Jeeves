@@ -59,4 +59,8 @@
     <string name="passwd_summary">Если пароль не пустая строка, то все команды нужно будет отсылать в виде: [Пароль] [Команда], например: Пароль Отчёт</string>
     <string name="passwd_lable">Пароль</string>
 
+    <string name="title_activity_alarm">AlarmActivity</string>
+    <string name="alarm_content">Внимание! Инициирован сигнал оповещения!</string>
+    <string name="alarm_button">Отключить</string>
+
 </resources>

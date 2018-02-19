@@ -77,6 +77,9 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+//        Utils.playAlarm(this)
+        Utils.starBlinkWithFlash(this)
+        Utils.stopBlinkWithFlash(this)
     }
 
     fun proceedPrefChange() {

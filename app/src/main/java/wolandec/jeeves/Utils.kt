@@ -8,6 +8,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.hardware.Camera
+import android.hardware.camera2.CameraManager
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Environment
 import android.preference.PreferenceManager
@@ -18,6 +22,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
 
+
 /**
  * Created by wolandec on 12.02.18.
  */
@@ -25,7 +30,15 @@ import java.util.*
 class Utils {
 
     companion object {
-        val LOG_TAG = this::class.java.simpleName
+        private var mediaPlayer: MediaPlayer? = null
+        private var cameraManager: CameraManager? = null
+        private var camera: Camera? = null
+        private var isFlashOn = false
+        private val LOG_TAG = this::class.java.simpleName
+        private var params: android.hardware.Camera.Parameters? = null
+
+        private var blinker: Thread? = null
+        val BLINK_DELAY: Long = 500
 
         fun setFlagStartedAtBootToTrue(context: Context?) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
@@ -147,5 +160,109 @@ class Utils {
                 message = message.substring(0, 140)
             return message
         }
+
+        fun playAlarm(context: Context) {
+            val resID = context.getResources().getIdentifier("alarm", "raw", context.packageName)
+            mediaPlayer = MediaPlayer.create(context, resID)
+            mediaPlayer?.isLooping = true
+            mediaPlayer?.start()
+        }
+
+        fun stopAlarm() {
+            mediaPlayer?.stop()
+        }
+
+        fun starBlinkWithFlash(context: Context) {
+            if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
+                return
+
+            getCamera(context)
+            blink()
+        }
+
+        private fun blink() {
+            intent = Intent(AlarmActivity::class.java)
+            blinker = object : Thread() {
+                override fun run() {
+                    while (!this.isInterrupted) {
+                        if (!isFlashOn) {
+                            turnScreenWhite()
+                            turnOnFlash()
+                        } else {
+                            turnScreenBlack()
+                            turnOffFlash()
+                        }
+                        Thread.sleep(BLINK_DELAY)
+                    }
+                }
+            }
+            blinker?.start()
+        }
+
+        private fun turnScreenBlack() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        private fun turnScreenWhite() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        fun stopBlinkWithFlash(context: Context) {
+            blinker?.interrupt()
+            if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
+                return
+            turnOffFlash()
+        }
+
+        private fun getCamera(context: Context) {
+            if (cameraManager == null) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        cameraManager = context.getSystemService(CameraManager::class.java)
+                    } else {
+                        params = camera?.getParameters()
+                    }
+                } catch (e: RuntimeException) {
+                    Log.d(LOG_TAG, e.toString());
+                }
+
+            }
+        }
+
+        private fun turnOnFlash() {
+            if (!isFlashOn) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    cameraManager?.setTorchMode(cameraManager?.getCameraIdList()!![0], true)
+                } else {
+                    if (camera == null || params == null) {
+                        return
+                    }
+                    params = camera?.getParameters()
+
+                    params?.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
+                    camera?.setParameters(params)
+                    camera?.startPreview()
+                }
+                isFlashOn = true
+            }
+
+        }
+
+        private fun turnOffFlash() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                cameraManager?.setTorchMode(cameraManager?.getCameraIdList()!![0], false)
+            } else {
+                if (camera == null || params == null) {
+                    return
+                }
+                params = camera?.getParameters()
+                params?.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_OFF)
+                camera?.setParameters(params)
+                camera?.stopPreview()
+            }
+            isFlashOn = false
+        }
+
     }
+
 }
