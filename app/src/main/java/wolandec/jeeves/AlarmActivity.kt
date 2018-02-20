@@ -2,7 +2,6 @@ package wolandec.jeeves
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.hardware.Camera
 import android.hardware.camera2.CameraManager
 import android.media.AudioAttributes
@@ -11,22 +10,29 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_alarm.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 class AlarmActivity : AppCompatActivity() {
+
+    private val SOUND_STREAM = AudioManager.STREAM_MUSIC
+    private val BLINK_DELAY: Long = 500
 
     private var mediaPlayer: MediaPlayer? = null
     private var cameraManager: CameraManager? = null
@@ -38,9 +44,9 @@ class AlarmActivity : AppCompatActivity() {
     private var mAudioManager: AudioManager? = null
     private var startBlinkFlash = false
     private var timer: Timer? = null
+    private var flashTimer: Timer? = null
+    private var curBrightness: Int? = null
 
-    private var blinker: Thread? = null
-    val BLINK_DELAY: Long = 500
 
     private val mHideHandler = Handler()
     private val mHidePart2Runnable = Runnable {
@@ -79,14 +85,13 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
 
         setContentView(R.layout.activity_alarm)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         mVisible = true
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -96,29 +101,53 @@ class AlarmActivity : AppCompatActivity() {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         dummy_button.setOnTouchListener(mDelayHideTouchListener)
+        EventBus.getDefault().register(this)
+        startAlarm()
+        super.onCreate(savedInstanceState)
+    }
+
+    fun setMaxBrightness() {
+        setCurrentBrightness()
+        setBrightness(255)
+    }
+
+    fun setBrightness(brightness: Int) {
+        var brightness = brightness
+
+        if (brightness < 0)
+            brightness = 0
+        else if (brightness > 255)
+            brightness = 255
+
+        val cResolver = this.contentResolver
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness)
+    }
+
+    fun setCurrentBrightness() {
+        val cResolver = this.contentResolver
+        curBrightness = Settings.System.getInt(
+                cResolver,
+                Settings.System.SCREEN_BRIGHTNESS)
     }
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this);
-        startAlarm()
     }
 
     private fun startAlarm() {
-//        playAlarm()
-//        starBlinkWithFlash()
+        playAlarm()
+        starBlinkWithFlash()
         startScreenBlink()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this)
         stopAlarm()
     }
 
     override fun onPause() {
         super.onPause()
-        stopAlarm()
     }
 
     private fun stopAlarm() {
@@ -129,20 +158,20 @@ class AlarmActivity : AppCompatActivity() {
 
     fun setMaxVolume() {
         mAudioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        originalVolume = mAudioManager?.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager?.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_MUSIC)!!, 0);
+        originalVolume = mAudioManager?.getStreamVolume(SOUND_STREAM)
+        mAudioManager?.setStreamVolume(SOUND_STREAM, mAudioManager?.getStreamMaxVolume(SOUND_STREAM)!!, 0)
     }
 
     fun playAlarm() {
         val resID = this.getResources().getIdentifier("alarm", "raw", this.packageName)
         mediaPlayer = MediaPlayer.create(this, resID)
         mediaPlayer?.isLooping = true
-//        setMaxVolume()
+        setMaxVolume()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaPlayer?.setAudioAttributes(AudioAttributes.Builder()
-                    .setLegacyStreamType(AudioManager.STREAM_MUSIC).build())
+                    .setLegacyStreamType(SOUND_STREAM).build())
         } else {
-            mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer?.setAudioStreamType(SOUND_STREAM)
         }
         mediaPlayer?.start()
     }
@@ -155,66 +184,55 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     private fun setOriginalVolume() {
-        mAudioManager?.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume!!, 0);
+        mAudioManager?.setStreamVolume(SOUND_STREAM, originalVolume!!, 0)
     }
 
-    fun starBlinkWithFlash() {
-        if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
+    private fun starBlinkWithFlash() {
+        if (!this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
             return
         getCamera(this)
         startBlinkFlash()
     }
 
     private fun startBlinkFlash() {
-        blinker = object : Thread() {
+        flashTimer = Timer()
+        flashTimer?.schedule(object : TimerTask() {
             override fun run() {
-                while (!this.isInterrupted) {
-                    if (!isFlashOn) {
-                        turnOnFlash()
-                    } else {
-                        turnOffFlash()
-                    }
-                }
-                Thread.sleep(BLINK_DELAY)
+                EventBus.getDefault().post(FlashChangeEvent(true))
             }
-        }
-        blinker?.start()
+        }, 0, BLINK_DELAY)
     }
 
     private fun stopScreenBlink() {
+        setBrightness(curBrightness!!)
         startBlinkFlash = false
         timer?.cancel()
     }
 
     private fun startScreenBlink() {
+        setMaxBrightness()
         var toggle = false
         timer = Timer()
         timer?.schedule(object : TimerTask() {
             override fun run() {
                 if (toggle)
-                    EventBus.getDefault().post(ScreenChangeEvent(Color.WHITE))
+                    EventBus.getDefault().post(ScreenChangeEvent(R.color.colorPrimary, R.color.colorAccent))
                 else
-                    EventBus.getDefault().post(ScreenChangeEvent(Color.BLACK))
+                    EventBus.getDefault().post(ScreenChangeEvent(R.color.colorAccent, R.color.colorPrimary))
                 toggle = !toggle
             }
         }, 0, BLINK_DELAY)
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun turnScreenBlack(screenChangeEvent: ScreenChangeEvent) {
-        findViewById<FrameLayout>(R.id.frame).setBackgroundColor(screenChangeEvent.color)
-    }
-
-    private fun turnScreenBlack() {
-        findViewById<FrameLayout>(R.id.frame).setBackgroundColor(Color.BLACK)
-    }
-
-    private fun turnScreenWhite() {
-        findViewById<FrameLayout>(R.id.frame).setBackgroundColor(Color.WHITE)
+    fun setScreenColor(screenChangeEvent: ScreenChangeEvent) {
+        findViewById<FrameLayout>(R.id.frame).setBackgroundColor(ContextCompat.getColor(this, screenChangeEvent.color))
+        findViewById<TextView>(R.id.fullscreen_content).setTextColor(ContextCompat.getColor(this, screenChangeEvent.textColor))
     }
 
     fun stopBlinkWithFlash() {
-        blinker?.interrupt()
+        flashTimer?.cancel()
         if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
             return
         turnOffFlash()
@@ -235,23 +253,29 @@ class AlarmActivity : AppCompatActivity() {
         }
     }
 
-    private fun turnOnFlash() {
-        if (!isFlashOn) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                cameraManager?.setTorchMode(cameraManager?.getCameraIdList()!![0], true)
-            } else {
-                if (camera == null || params == null) {
-                    return
-                }
-                params = camera?.getParameters()
-
-                params?.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
-                camera?.setParameters(params)
-                camera?.startPreview()
-            }
-            isFlashOn = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun toggleFlash(flashChangeEvent: FlashChangeEvent) {
+        if (isFlashOn) {
+            turnOffFlash()
+        } else {
+            turnOnFlash()
         }
+    }
 
+    private fun turnOnFlash() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cameraManager?.setTorchMode(cameraManager?.getCameraIdList()!![0], true)
+        } else {
+            if (camera == null || params == null) {
+                return
+            }
+            params = camera?.getParameters()
+
+            params?.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
+            camera?.setParameters(params)
+            camera?.startPreview()
+        }
+        isFlashOn = true
     }
 
     private fun turnOffFlash() {

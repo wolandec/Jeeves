@@ -33,7 +33,7 @@
 
     <string name="find_label">Функция поиска</string>
     <string name="find_sms_text_lable">Текст СМС для запуска функции поиска(телефон
-        подаёт сигнал на максимальной громкости и моргает световым приборами)</string>
+        подаёт сигнал на максимальной громкости и моргает световыми приборами)</string>
     <string name="find_default_sms">Поиск</string>
     <string name="find_enable">Включено</string>
 
