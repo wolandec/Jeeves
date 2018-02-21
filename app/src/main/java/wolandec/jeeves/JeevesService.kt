@@ -71,6 +71,7 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+        sendLocation()
     }
 
     fun proceedPrefChange() {
@@ -213,7 +214,6 @@ class JeevesService() : Service(), LocationListener {
                 "${wifiMessage}"
         message = Utils.prepareMessageLength(message)
         sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
-
     }
 
 
@@ -313,7 +313,7 @@ class JeevesService() : Service(), LocationListener {
             if (locationManager!!.isProviderEnabled("gps") == true)
                 updateLocation()
             else {
-                sendLocationSMS()
+                sendLocationSMS(false)
             }
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
@@ -322,12 +322,16 @@ class JeevesService() : Service(), LocationListener {
     }
 
 
-    private fun sendLocationSMS() {
+    private fun sendLocationSMS(providerEnabled: Boolean) {
         try {
             if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
                 val sms = SmsManager.getDefault()
                 val batteryPct = getBatteryLevel()
-                var message: String = "${getString(R.string.accuracy)}:${location.accuracy}\n" +
+                var message: String = ""
+                if (!providerEnabled)
+                    message="GPS:${getString(R.string.wifi_state_disabled)}\n"
+
+                message  +="${getString(R.string.accuracy)}:${location.accuracy}\n" +
                         "${getString(R.string.battery)}:$batteryPct%\n" +
                         "https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
                 message = Utils.prepareMessageLength(message)
@@ -357,7 +361,7 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onLocationChanged(p0: Location?) {
         location = p0!!
-        sendLocationSMS()
+        sendLocationSMS(false)
         locationManager?.removeUpdates(this)
     }
 

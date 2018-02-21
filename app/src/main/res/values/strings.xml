@@ -55,9 +55,9 @@
     <string name="ringer_mode_silent">Без звука</string>
     <string name="ringer_mode">Режим</string>
 
-    <string name="wifi_state_disabled">Отключён</string>
+    <string name="wifi_state_disabled">Откл</string>
     <string name="wifi_state_disabling">Отключается</string>
-    <string name="wifi_state_enabled">Включен</string>
+    <string name="wifi_state_enabled">Вкл</string>
     <string name="wifi_state_enabling">Включается</string>
     <string name="wifi_label">WiFi</string>
     <string name="ready_to_work">Готов к работе</string>
