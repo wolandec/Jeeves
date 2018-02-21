@@ -71,7 +71,7 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-        sendLocation()
+        sendReport()
     }
 
     fun proceedPrefChange() {
@@ -209,7 +209,15 @@ class JeevesService() : Service(), LocationListener {
         val batteryPct = getBatteryLevel()
 
         val sms = SmsManager.getDefault()
-        var message: String = "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
+        locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        var message: String = ""
+        if (!locationManager!!.isProviderEnabled("gps"))
+            message="GPS:${getString(R.string.wifi_state_disabled)}\n"
+        else
+            message="GPS:${getString(R.string.wifi_state_enabled)}\n"
+
+        message += "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
                 "${getString(R.string.battery)}:${batteryPct}%\n" +
                 "${wifiMessage}"
         message = Utils.prepareMessageLength(message)
