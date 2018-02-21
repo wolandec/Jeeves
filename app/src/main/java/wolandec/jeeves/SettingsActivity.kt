@@ -19,8 +19,6 @@ import android.util.Log
 import android.widget.Toast
 
 
-
-
 class SettingsActivity : AppCompatActivity() {
 
     val LOG_TAG = this::class.java.simpleName
@@ -127,6 +125,8 @@ class SettingsActivity : AppCompatActivity() {
         onDisplayPopupMIUIPermissions()
 
         if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
                         Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
@@ -135,14 +135,21 @@ class SettingsActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_SETTINGS) !=PackageManager.PERMISSION_GRANTED
+                        Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.RECEIVE_SMS,
+                            Manifest.permission.SEND_SMS,
                             Manifest.permission.CALL_PHONE,
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_SETTINGS),
+                            Manifest.permission.WRITE_SETTINGS,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.CHANGE_WIFI_STATE),
                     1)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
