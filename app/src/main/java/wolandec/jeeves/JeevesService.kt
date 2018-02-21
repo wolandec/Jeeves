@@ -365,8 +365,9 @@ class JeevesService() : Service(), LocationListener {
             val sms = SmsManager.getDefault()
             val batteryPct = getBatteryLevel()
             var message: String = ""
-            if (!providerEnabled)
+            if (!isGpsEnabled()){
                 message = "${getString(R.string.gps_label)}:${getString(R.string.wifi_state_disabled)}\n"
+            }
             message += "${getString(R.string.battery)}:$batteryPct%\n"
             if (location != null) {
                 message += "${getString(R.string.accuracy)}:${location!!.accuracy}\n" +
