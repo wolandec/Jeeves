@@ -130,7 +130,12 @@ class Utils {
             } else {
                 builder = NotificationCompat.Builder(context, "wolandec.jeeves")
                         .setDefaults(0)
-                        .setSmallIcon(R.mipmap.ic_icon)
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder.setSmallIcon(R.drawable.ic_icon)
+                    builder.setColor(context.getResources().getColor(R.color.colorAccent))
+                } else {
+                    builder.setSmallIcon(R.mipmap.ic_icon)
+                }
                         .setContentTitle(context.getString(R.string.app_name))
                         .setContentText(context.getString(R.string.ready_to_work))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
