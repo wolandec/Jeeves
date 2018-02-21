@@ -67,5 +67,7 @@
 
     <string name="alarm_content">Внимание! Инициирован сигнал оповещения!</string>
     <string name="alarm_button">Отключить</string>
+    <string name="gps_label">GPS</string>
+    <string name="GPS_needed_text">Для отчёта нужен GPS:Вкл</string>
 
 </resources>

@@ -66,5 +66,7 @@
     <string name="passwd_lable">Password</string>
     <string name="alarm_content">Warning! Alarm is initiated.</string>
     <string name="alarm_button">Turn off</string>
+    <string name="gps_label">GPS</string>
+    <string name="GPS_needed_text">To proceed GPS:Enabled needed</string>
 
 </resources>

@@ -37,7 +37,7 @@ class JeevesService() : Service(), LocationListener {
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
     private var intent: Intent? = null
 
-    lateinit var location: Location
+    var location: Location? = null
     var brReceiver: JeevesReceiver = JeevesReceiver()
 
     constructor(parcel: Parcel) : this() {
@@ -187,6 +187,10 @@ class JeevesService() : Service(), LocationListener {
 
     private fun sendReport() {
         val wifiCurState = startWiFiScan()
+        if (!isGpsEnabled()) {
+            proceedReportSend(currentSMSMessageEvent, wifiCurState)
+            return
+        }
         val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
                 proceedReportSend(currentSMSMessageEvent, wifiCurState)
@@ -199,7 +203,7 @@ class JeevesService() : Service(), LocationListener {
 
     private fun proceedReportSend(currentSMSMessageEvent: SMSMessageEvent?, wifiCurState: Boolean) {
         var wifiNetworks = getWiFiScanResults(wifiCurState)
-        val wifiMessage = prepareWiFiNetworksString(wifiNetworks)
+        val wifiMessage = prepareWiFiNetworksString(wifiNetworks, wifiCurState)
 
         val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val mode = audioManager.ringerMode
@@ -210,14 +214,14 @@ class JeevesService() : Service(), LocationListener {
         val sms = SmsManager.getDefault()
         locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        var message: String = ""
+        var message = "${getString(R.string.gps_label)}:"
         if (!locationManager!!.isProviderEnabled("gps"))
-            message="GPS:${getString(R.string.wifi_state_disabled)}\n"
+            message += "${getString(R.string.wifi_state_disabled)}\n"
         else
-            message="GPS:${getString(R.string.wifi_state_enabled)}\n"
+            message += "${getString(R.string.wifi_state_enabled)}\n"
 
         message += "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
-                "${getString(R.string.battery)}:${batteryPct}%\n" +
+                "${getString(R.string.battery)}:${batteryPct}%\n\n" +
                 "${wifiMessage}"
         message = Utils.prepareMessageLength(message)
         sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
@@ -227,6 +231,10 @@ class JeevesService() : Service(), LocationListener {
     @SuppressLint("MissingPermission")
     private fun sendWifiNetworks() {
         val wifiCurState = startWiFiScan()
+        if (!isGpsEnabled()) {
+            proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
+            return
+        }
         if (!wifiCurState) {
             val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(p0: Context?, p1: Intent?) {
@@ -253,7 +261,7 @@ class JeevesService() : Service(), LocationListener {
 
     private fun proceedWiFiNetworksSend(currentSMSMessageEvent: SMSMessageEvent?, wifiCurState: Boolean) {
         val wifiNetworks = getWiFiScanResults(wifiCurState)
-        sendWifiNetworksSMS(wifiNetworks)
+        sendWifiNetworksSMS(wifiNetworks, wifiCurState)
     }
 
     private fun getWiFiScanResults(wifiCurState: Boolean): List<ScanResult>? {
@@ -272,32 +280,55 @@ class JeevesService() : Service(), LocationListener {
     }
 
 
-    private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>?) {
+    private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean) {
         try {
-            var message = prepareWiFiNetworksString(wifiNetworks)
+            var message = prepareWiFiNetworksString(wifiNetworks, wifiCurState)
             val sms = SmsManager.getDefault()
             message = Utils.prepareMessageLength(message)
-            Log.d(LOG_TAG, message)
             sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
     }
 
-    private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?): String {
-        val wifiStatus = getHumanWiFiStatus()
-        var message = "${getString(R.string.wifi_label)}:${wifiStatus}\n\n"
+    private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean): String {
+        var message = "${getString(R.string.wifi_label)}:"
+        if (!wifiCurState) {
+            message += "${getString(R.string.wifi_state_disabled)}\n"
+        } else {
+            message += "${getString(R.string.wifi_state_enabled)}\n"
+        }
+        message += "${getString(R.string.gps_label)}:${getGpsHumanStatus()}\n\n"
+
         var i = 0
-        if (wifiNetworks != null)
+        if (wifiNetworks != null && wifiNetworks.size > 0)
             for (network in wifiNetworks) {
                 if (i < 5) {
                     val level = WifiManager.calculateSignalLevel(network.level, 100)
-                    Log.d(LOG_TAG, "${network.SSID}: ${level}%")
                     message += "${network.SSID}: ${level}%\n"
                     i++
                 }
             }
+        else {
+            if (!isGpsEnabled()) {
+                message += getString(R.string.GPS_needed_text)
+            }
+        }
         return message
+    }
+
+    private fun getGpsHumanStatus(): String {
+        locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (locationManager!!.isProviderEnabled("gps") == true)
+            return getString(R.string.wifi_state_enabled)
+        else
+            return getString(R.string.wifi_state_disabled)
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager!!.isProviderEnabled("gps")
     }
 
 
@@ -315,9 +346,8 @@ class JeevesService() : Service(), LocationListener {
     private fun sendLocation() {
         try {
             needLocationSMSToSend = true
-            locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-            if (locationManager!!.isProviderEnabled("gps") == true)
+            if (isGpsEnabled())
                 updateLocation()
             else {
                 sendLocationSMS(false)
@@ -331,18 +361,19 @@ class JeevesService() : Service(), LocationListener {
 
     private fun sendLocationSMS(providerEnabled: Boolean) {
         try {
-            if (currentSMSMessageEvent != null && location != null && needLocationSMSToSend) {
-                val sms = SmsManager.getDefault()
-                val batteryPct = getBatteryLevel()
-                var message: String = ""
-                if (!providerEnabled)
-                    message="GPS:${getString(R.string.wifi_state_disabled)}\n"
-
-                message  +="${getString(R.string.accuracy)}:${location.accuracy}\n" +
-                        "${getString(R.string.battery)}:$batteryPct%\n" +
-                        "https://maps.google.com/maps?q=loc:${location.latitude},${location.longitude}"
-                message = Utils.prepareMessageLength(message)
-                sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
+            if (currentSMSMessageEvent != null && needLocationSMSToSend) {
+            val sms = SmsManager.getDefault()
+            val batteryPct = getBatteryLevel()
+            var message: String = ""
+            if (!providerEnabled)
+                message = "${getString(R.string.gps_label)}:${getString(R.string.wifi_state_disabled)}\n"
+            message += "${getString(R.string.battery)}:$batteryPct%\n"
+            if (location != null) {
+                message += "${getString(R.string.accuracy)}:${location!!.accuracy}\n" +
+                        "https://maps.google.com/maps?q=loc:${location!!.latitude},${location!!.longitude}"
+            }
+            message = Utils.prepareMessageLength(message)
+            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
             }
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
