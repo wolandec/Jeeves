@@ -37,12 +37,17 @@
     <string name="find_default_sms">Find</string>
     <string name="find_enable">Enable</string>
 
+    <string name="wifi_toggle_label">Toggle WiFi</string>
+    <string name="wifi_toggle_sms_text_lable">SMS-text to toggle WiFi</string>
+    <string name="wifi_toggle_default_sms">WiFi toggle</string>
+    <string name="wifi_toggle_enable">Enable</string>
+
     <string name="on_boot_string">Jeeves woke up.</string>
     <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
     <string name="enable_jeeves">Wake up</string>
     <string name="startup_on_boot_dialog_title">Autostart at boot</string>
-    <string name="startup_on_boot_dialog_text">Jeeves need to be autostarted at boot, please allow it in the settings.</string>
+    <string name="startup_on_boot_dialog_text">Jeeves needs to be autostarted at boot, please allow it in the settings.</string>
     <string name="dont_disturb_perm_dialog_title">Permission for Jeeves</string>
     <string name="dont_disturb_perm_dialog_text">To enable turn your device to vibration mode, please, give a permission to Jeeves.</string>
     <string name="perm_dialog_title">Check permissions</string>

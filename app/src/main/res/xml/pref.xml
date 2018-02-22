@@ -65,7 +65,7 @@
             android:defaultValue="true"
             android:key="wifi_networks_enable"
             android:summary="@string/wifi_networks_enable"
-            android:icon="@drawable/ic_signal_wifi_24dp"/>
+            android:icon="@drawable/ic_wifi_tethering_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/wifi_networks_default_sms"
             android:key="wifi_networks_sms"
@@ -94,6 +94,18 @@
             android:defaultValue="@string/find_default_sms"
             android:key="find_sms"
             android:summary="@string/find_sms_text_lable" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/wifi_toggle_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="wifi_toggle_enable"
+            android:summary="@string/wifi_toggle_enable"
+            android:icon="@drawable/ic_signal_wifi_24dp"/>
+        <EditTextPreference
+            android:defaultValue="@string/wifi_toggle_default_sms"
+            android:key="wifi_toggle_sms"
+            android:summary="@string/wifi_toggle_sms_text_lable" />
     </PreferenceCategory>
 
 </PreferenceScreen>

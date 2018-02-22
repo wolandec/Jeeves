@@ -132,10 +132,19 @@ class JeevesService() : Service(), LocationListener {
                     if (sharedPref?.getBoolean("find_enable", false) == true)
                         startAlarm()
                 }
+                pswd + sharedPref?.getString("wifi_toggle_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true)
+                        toggleWifi()
+                }
             }
         } catch (e: Exception) {
             currentSMSMessageEvent = null
         }
+    }
+
+    private fun toggleWifi() {
+        val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifiManager.setWifiEnabled(!getWifiCurState(wifiManager))
     }
 
     private fun startAlarm() {
@@ -251,12 +260,16 @@ class JeevesService() : Service(), LocationListener {
 
     private fun startWiFiScan(): Boolean {
         val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val wifiCurState = wifiManager.isWifiEnabled
+        val wifiCurState = getWifiCurState(wifiManager)
         if (!wifiCurState) {
             wifiManager.setWifiEnabled(true)
         }
         wifiManager.startScan()
         return wifiCurState
+    }
+
+    private fun getWifiCurState(wifiManager: WifiManager): Boolean{
+        return wifiManager?.isWifiEnabled
     }
 
     private fun proceedWiFiNetworksSend(currentSMSMessageEvent: SMSMessageEvent?, wifiCurState: Boolean) {

@@ -37,6 +37,12 @@
     <string name="find_default_sms">Поиск</string>
     <string name="find_enable">Включено</string>
 
+    <string name="wifi_toggle_label">Смена режима WiFi</string>
+    <string name="wifi_toggle_sms_text_lable">Текст СМС переключения режима WiFi на противоположный
+        (если был включен, то выключится, если отключен, то включится)</string>
+    <string name="wifi_toggle_default_sms">WiFi переключить</string>
+    <string name="wifi_toggle_enable">Включено</string>
+
     <string name="on_boot_string">Jeeves проснулся.</string>
     <string name="on_stop_string">Jeeves спит.</string>
     <string name="wifi_net_label">Wi-Fi сети</string>
