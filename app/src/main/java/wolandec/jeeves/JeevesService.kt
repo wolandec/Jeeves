@@ -221,15 +221,8 @@ class JeevesService() : Service(), LocationListener {
         val batteryPct = getBatteryLevel()
 
         val sms = SmsManager.getDefault()
-        locationManager = this.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        var message = "${getString(R.string.gps_label)}:"
-        if (!locationManager!!.isProviderEnabled("gps"))
-            message += "${getString(R.string.wifi_state_disabled)}\n"
-        else
-            message += "${getString(R.string.wifi_state_enabled)}\n"
-
-        message += "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
+        var message = "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
                 "${getString(R.string.battery)}:${batteryPct}%\n\n" +
                 "${wifiMessage}"
         message = Utils.prepareMessageLength(message)
@@ -268,7 +261,7 @@ class JeevesService() : Service(), LocationListener {
         return wifiCurState
     }
 
-    private fun getWifiCurState(wifiManager: WifiManager): Boolean{
+    private fun getWifiCurState(wifiManager: WifiManager): Boolean {
         return wifiManager?.isWifiEnabled
     }
 
@@ -375,19 +368,19 @@ class JeevesService() : Service(), LocationListener {
     private fun sendLocationSMS(providerEnabled: Boolean) {
         try {
             if (currentSMSMessageEvent != null && needLocationSMSToSend) {
-            val sms = SmsManager.getDefault()
-            val batteryPct = getBatteryLevel()
-            var message: String = ""
-            if (!isGpsEnabled()){
-                message = "${getString(R.string.gps_label)}:${getString(R.string.wifi_state_disabled)}\n"
-            }
-            message += "${getString(R.string.battery)}:$batteryPct%\n"
-            if (location != null) {
-                message += "${getString(R.string.accuracy)}:${location!!.accuracy}\n" +
-                        "https://maps.google.com/maps?q=loc:${location!!.latitude},${location!!.longitude}"
-            }
-            message = Utils.prepareMessageLength(message)
-            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
+                val sms = SmsManager.getDefault()
+                val batteryPct = getBatteryLevel()
+                var message: String = ""
+                if (!isGpsEnabled()) {
+                    message = "${getString(R.string.gps_label)}:${getString(R.string.wifi_state_disabled)}\n"
+                }
+                message += "${getString(R.string.battery)}:$batteryPct%\n"
+                if (location != null) {
+                    message += "${getString(R.string.accuracy)}:${location!!.accuracy}\n" +
+                            "https://maps.google.com/maps?q=loc:${location!!.latitude},${location!!.longitude}"
+                }
+                message = Utils.prepareMessageLength(message)
+                sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
             }
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
