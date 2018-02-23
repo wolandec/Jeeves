@@ -138,7 +138,7 @@ class Utils {
                 }
                         .setContentTitle(context.getString(R.string.app_name))
                         .setContentText(context.getString(R.string.ready_to_work))
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setPriority(Notification.PRIORITY_MIN)
                         .setContentIntent(PendingIntent.getActivity(context,
                                 1,
                                 Intent(context, SettingsActivity::class.java), 0))

@@ -11,14 +11,12 @@ import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION
-import android.os.BatteryManager
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcel
+import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.telephony.SmsManager
 import android.util.Log
+import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -27,8 +25,6 @@ import org.greenrobot.eventbus.ThreadMode
 class JeevesService() : Service(), LocationListener {
 
     val LOG_TAG = this::class.java.simpleName
-    val NOTIFY_ID = 1002
-
 
     private var needLocationSMSToSend: Boolean = false
     private var currentSMSMessageEvent: SMSMessageEvent? = null
@@ -55,6 +51,10 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
+        var NOTIFY_ID = 0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NOTIFY_ID = 1124
+        }
 
         val notification = Utils.getNotification(this)
         startForeground(NOTIFY_ID, notification)
@@ -71,6 +71,8 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
+
+        Toast.makeText(this,this.resources.getText(R.string.on_boot_string), Toast.LENGTH_LONG).show()
     }
 
     fun proceedPrefChange() {
@@ -222,8 +224,8 @@ class JeevesService() : Service(), LocationListener {
 
         val sms = SmsManager.getDefault()
 
-        var message = "${getString(R.string.ringer_mode)}:${ringerMode}\n" +
-                "${getString(R.string.battery)}:${batteryPct}%\n\n" +
+        var message = "${getString(R.string.ringer_mode)}-${ringerMode}\n" +
+                "${getString(R.string.battery)}-${batteryPct}%\n\n" +
                 "${wifiMessage}"
         message = Utils.prepareMessageLength(message)
         sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
@@ -298,20 +300,20 @@ class JeevesService() : Service(), LocationListener {
     }
 
     private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean): String {
-        var message = "${getString(R.string.wifi_label)}:"
+        var message = "${getString(R.string.wifi_label)}-"
         if (!wifiCurState) {
             message += "${getString(R.string.wifi_state_disabled)}\n"
         } else {
             message += "${getString(R.string.wifi_state_enabled)}\n"
         }
-        message += "${getString(R.string.gps_label)}:${getGpsHumanStatus()}\n\n"
+        message += "${getString(R.string.gps_label)}-${getGpsHumanStatus()}\n\n"
 
         var i = 0
         if (wifiNetworks != null && wifiNetworks.size > 0)
             for (network in wifiNetworks) {
                 if (i < 5) {
                     val level = WifiManager.calculateSignalLevel(network.level, 100)
-                    message += "${network.SSID}: ${level}%\n"
+                    message += "${network.SSID} - ${level}%\n"
                     i++
                 }
             }
@@ -372,11 +374,11 @@ class JeevesService() : Service(), LocationListener {
                 val batteryPct = getBatteryLevel()
                 var message: String = ""
                 if (!isGpsEnabled()) {
-                    message = "${getString(R.string.gps_label)}:${getString(R.string.wifi_state_disabled)}\n"
+                    message = "${getString(R.string.gps_label)} - ${getString(R.string.wifi_state_disabled)}\n"
                 }
-                message += "${getString(R.string.battery)}:$batteryPct%\n"
+                message += "${getString(R.string.battery)} - $batteryPct%\n"
                 if (location != null) {
-                    message += "${getString(R.string.accuracy)}:${location!!.accuracy}\n" +
+                    message += "${getString(R.string.accuracy)} - ${location!!.accuracy}\n" +
                             "https://maps.google.com/maps?q=loc:${location!!.latitude},${location!!.longitude}"
                 }
                 message = Utils.prepareMessageLength(message)

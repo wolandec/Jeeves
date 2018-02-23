@@ -61,9 +61,9 @@
     <string name="ringer_mode_silent">Без звука</string>
     <string name="ringer_mode">Режим</string>
 
-    <string name="wifi_state_disabled">Откл</string>
+    <string name="wifi_state_disabled">Off</string>
     <string name="wifi_state_disabling">Отключается</string>
-    <string name="wifi_state_enabled">Вкл</string>
+    <string name="wifi_state_enabled">On</string>
     <string name="wifi_state_enabling">Включается</string>
     <string name="wifi_label">WiFi</string>
     <string name="ready_to_work">Готов к работе</string>
@@ -74,6 +74,6 @@
     <string name="alarm_content">Внимание! Инициирован сигнал оповещения!</string>
     <string name="alarm_button">Отключить</string>
     <string name="gps_label">GPS</string>
-    <string name="GPS_needed_text">Для отчёта нужен GPS:Вкл</string>
+    <string name="GPS_needed_text">Для отчёта нужен GPS:On</string>
 
 </resources>

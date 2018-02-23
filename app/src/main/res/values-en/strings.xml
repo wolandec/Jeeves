@@ -60,9 +60,9 @@
     <string name="ringer_mode_silent">Silent</string>
     <string name="ringer_mode">Mode</string>
 
-    <string name="wifi_state_disabled">Disabled</string>
+    <string name="wifi_state_disabled">Off</string>
     <string name="wifi_state_disabling">Disabling</string>
-    <string name="wifi_state_enabled">Enabled</string>
+    <string name="wifi_state_enabled">On</string>
     <string name="wifi_state_enabling">Enabling</string>
     <string name="wifi_label">WiFi</string>
     <string name="ready_to_work">Ready to work</string>
@@ -72,6 +72,6 @@
     <string name="alarm_content">Warning! Alarm is initiated.</string>
     <string name="alarm_button">Turn off</string>
     <string name="gps_label">GPS</string>
-    <string name="GPS_needed_text">To proceed GPS:Enabled needed</string>
+    <string name="GPS_needed_text">To proceed GPS:On needed</string>
 
 </resources>
