@@ -1,6 +1,8 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.*
 import android.location.Location
@@ -16,10 +18,11 @@ import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.telephony.SmsManager
 import android.util.Log
-import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+
+
 
 
 class JeevesService() : Service(), LocationListener {
@@ -72,12 +75,19 @@ class JeevesService() : Service(), LocationListener {
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
 
-        Toast.makeText(this,this.resources.getText(R.string.on_boot_string), Toast.LENGTH_LONG).show()
+        startAlarmForJeeves()
+    }
+
+    private fun startAlarmForJeeves() {
+        val intent = Intent(this, JeevesService::class.java)
+        val pintent = PendingIntent.getService(this, 0, intent, 0)
+        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, 0, (30 * 1000).toLong(), pintent)
     }
 
     fun proceedPrefChange() {
         if (sharedPref?.getBoolean("enable_jeeves", false) == false) {
-            stopForeground(true);
+            stopForeground(true)
             stopSelf()
         }
     }
@@ -91,11 +101,11 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         this.intent = intent
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY;
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent);
+        super.onTaskRemoved(rootIntent)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
