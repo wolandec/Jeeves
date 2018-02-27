@@ -2,6 +2,7 @@
 import android.support.test.runner.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.security.KeyPairGenerator
 
 
 /**
@@ -9,11 +10,12 @@ import org.junit.runner.RunWith
  */
 
 @RunWith(AndroidJUnit4::class)
-class UtilsTest{
-
-    val fileName = "alarm.mp3"
+class UtilsTest {
 
     @Test
-    fun playAlarmFile(){
+    fun getKeyStore() {
+        val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
+        keyPairGenerator.genKeyPair()
     }
+
 }

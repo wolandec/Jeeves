@@ -11,6 +11,12 @@
         android:title="@string/passwd_lable"
         android:summary="@string/passwd_summary" />
 
+    <EditTextPreference
+        android:defaultValue="@string/app_passwd"
+        android:key="app_passwd"
+        android:title="@string/app_passwd_lable"
+        android:summary="@string/app_passwd_summary" />
+
     <PreferenceCategory android:title="@string/location_label">
 
         <CheckBoxPreference

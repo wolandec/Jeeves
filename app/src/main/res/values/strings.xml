@@ -69,11 +69,20 @@
     <string name="ready_to_work">Готов к работе</string>
     <string name="passwd"></string>
     <string name="passwd_summary">Если пароль не пустая строка, то все команды нужно будет отсылать в виде: [Пароль] [Команда], например: Пароль Отчёт</string>
-    <string name="passwd_lable">Пароль</string>
+    <string name="passwd_lable">Префикс-пароль</string>
+
+    <string name="app_passwd"></string>
+    <string name="app_passwd_summary">Если пароль на приложение не пустая строка, то для доступа к настройкам нужно будет каждый раз вводить его. Не забудьте пароль, восстановить его невозможно.</string>
+    <string name="app_passwd_lable">Пароль на приложение</string>
 
     <string name="alarm_content">Внимание! Инициирован сигнал оповещения!</string>
     <string name="alarm_button">Отключить</string>
     <string name="gps_label">GPS</string>
     <string name="GPS_needed_text">Для отчёта нужен GPS:On</string>
+    <string name="login_dialog_message">Введите пароль</string>
+    <string name="login_dialog_title">Вход</string>
+    <string name="ok_button_text">Ok</string>
+    <string name="cancel_button_text">Отмена</string>
+    <string name="app_passwd_invalid">Пароль неверный</string>
 
 </resources>

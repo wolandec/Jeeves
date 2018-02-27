@@ -19,15 +19,13 @@ import android.util.Log
 import android.widget.Toast
 
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogListener {
+
 
     val LOG_TAG = this::class.java.simpleName
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
-
-    public override fun onStop() {
-        super.onStop()
-    }
+    var appPasswd = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +44,16 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
+
+        if (sharedPref?.getString("app_passwd", "") != appPasswd)
+            showLoginDialog(false)
+    }
+
+    private fun showLoginDialog(invalidPassword: Boolean) {
+        val loginDialog = LoginDialogFragment()
+        loginDialog.isCancelable = false
+        loginDialog.invalidPassword = invalidPassword
+        loginDialog.show(getSupportFragmentManager(), "LoginDialogFragment");
     }
 
     fun checkPermissions() {
@@ -196,5 +204,19 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
     }
+
+    override fun onDialogNegativeClick(dialog: LoginDialogFragment) {
+        this.finish()
+    }
+
+    override fun onDialogPositiveClick(dialog: LoginDialogFragment) {
+        if (dialog?.passView?.text!!.toString().equals(sharedPref?.getString("app_passwd", ""))) {
+
+        } else {
+            showLoginDialog(true)
+        }
+    }
+
+
 
 }
