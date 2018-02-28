@@ -1,5 +1,6 @@
 package wolandec.jeeves
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Camera
@@ -84,6 +85,7 @@ class AlarmActivity : AppCompatActivity() {
         false
     }
 
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
         window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
@@ -91,6 +93,10 @@ class AlarmActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
 
         setContentView(R.layout.activity_alarm)
+        val text = getIntent().getStringExtra("text")
+        if (text!=null)
+            findViewById<TextView>(R.id.fullscreen_content).text = text
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         mVisible = true
 

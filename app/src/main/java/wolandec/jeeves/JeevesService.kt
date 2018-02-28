@@ -23,8 +23,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-
-
 class JeevesService() : Service(), LocationListener {
 
     val LOG_TAG = this::class.java.simpleName
@@ -115,7 +113,9 @@ class JeevesService() : Service(), LocationListener {
         if (!sharedPref?.getString("passwd", "").equals(""))
             pswd = sharedPref?.getString("passwd", "") + " "
         try {
-            when (smsMessageEvent.message.toLowerCase()) {
+            val messageInLowerCase = smsMessageEvent.message.toLowerCase()
+            val findSmsWithPassword = pswd + sharedPref?.getString("find_sms", "")?.toLowerCase()
+            when (messageInLowerCase) {
                 pswd + sharedPref?.getString("call_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("call_enable", false) == true)
                         callPhone()
@@ -140,15 +140,22 @@ class JeevesService() : Service(), LocationListener {
                     if (sharedPref?.getBoolean("report_enable", false) == true)
                         sendReport()
                 }
-                pswd + sharedPref?.getString("find_sms", "")?.toLowerCase() -> {
+                findSmsWithPassword -> {
                     if (sharedPref?.getBoolean("find_enable", false) == true)
-                        startAlarm()
+                        startAlarm("")
                 }
                 pswd + sharedPref?.getString("wifi_toggle_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true)
                         toggleWifi()
                 }
             }
+            if (messageInLowerCase != findSmsWithPassword &&
+                    messageInLowerCase.contains(findSmsWithPassword, true)) {
+                startAlarm(smsMessageEvent.message.substring(
+                        messageInLowerCase.indexOf(findSmsWithPassword) + findSmsWithPassword.length + 1,
+                        messageInLowerCase.length))
+            }
+
         } catch (e: Exception) {
             currentSMSMessageEvent = null
         }
@@ -159,8 +166,10 @@ class JeevesService() : Service(), LocationListener {
         wifiManager.setWifiEnabled(!getWifiCurState(wifiManager))
     }
 
-    private fun startAlarm() {
+    private fun startAlarm(text: String) {
         val intent = Intent(this, AlarmActivity::class.java)
+        if (text.replace(" ", "") != "")
+            intent.putExtra("text", text)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
