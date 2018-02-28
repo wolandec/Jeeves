@@ -33,7 +33,8 @@
 
     <string name="find_label">Find</string>
     <string name="find_sms_text_lable">SMS-text to start find process(device
-        make noise at the highest level and blinks)</string>
+        make noise at the highest level and blinks). After the command in SMS you may add some short
+        text, it willbe shown on the screen. For example: Find Call mum, please</string>
     <string name="find_default_sms">Find</string>
     <string name="find_enable">Enable</string>
 

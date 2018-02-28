@@ -33,7 +33,8 @@
 
     <string name="find_label">Функция поиска</string>
     <string name="find_sms_text_lable">Текст СМС для запуска функции поиска(телефон
-        подаёт сигнал на максимальной громкости и моргает световыми приборами)</string>
+        подаёт сигнал на максимальной громкости и моргает световыми приборами). После команды через
+        пробел можно набрать текст, который будет отображаться на экране. Например: Поиск Позвони маме.</string>
     <string name="find_default_sms">Поиск</string>
     <string name="find_enable">Включено</string>
 
@@ -72,7 +73,7 @@
     <string name="passwd_lable">Префикс-пароль</string>
 
     <string name="app_passwd"></string>
-    <string name="app_passwd_summary">Если пароль на приложение не пустая строка, то для доступа к настройкам нужно будет каждый раз вводить его. Не забудьте пароль, восстановить его невозможно.</string>
+    <string name="app_passwd_summary">Если пароль на приложение не пустая строка, то для доступа к настройкам нужно будет каждый раз вводить его. Не забывайте пароль, восстановить его невозможно.</string>
     <string name="app_passwd_lable">Пароль на приложение</string>
 
     <string name="alarm_content">Внимание! Инициирован сигнал оповещения!</string>
@@ -83,6 +84,6 @@
     <string name="login_dialog_title">Вход</string>
     <string name="ok_button_text">Ok</string>
     <string name="cancel_button_text">Отмена</string>
-    <string name="app_passwd_invalid">Пароль неверный</string>
+    <string name="app_passwd_invalid">Неверный пароль</string>
 
 </resources>
