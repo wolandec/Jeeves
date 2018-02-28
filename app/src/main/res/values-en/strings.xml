@@ -84,5 +84,8 @@
     <string name="ok_button_text">Ok</string>
     <string name="cancel_button_text">Cancel</string>
     <string name="app_passwd_invalid">Invalid password</string>
+    <string name="commands_list_sms">Commands</string>
+    <string name="commands_list_lable">Command list</string>
+    <string name="commands_list_summary">SMS-text to get available commands list</string>
 
 </resources>

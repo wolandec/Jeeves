@@ -85,5 +85,8 @@
     <string name="ok_button_text">Ok</string>
     <string name="cancel_button_text">Отмена</string>
     <string name="app_passwd_invalid">Неверный пароль</string>
+    <string name="commands_list_sms">Команды</string>
+    <string name="commands_list_lable">Список команд</string>
+    <string name="commands_list_summary">Текст СМС для получения списка команд и функций включенных на устройстве.</string>
 
 </resources>

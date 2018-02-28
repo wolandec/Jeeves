@@ -148,6 +148,9 @@ class JeevesService() : Service(), LocationListener {
                     if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true)
                         toggleWifi()
                 }
+                pswd + sharedPref?.getString("commands_list_sms", "")?.toLowerCase() -> {
+                    sendCommandsList()
+                }
             }
             if (messageInLowerCase != findSmsWithPassword &&
                     messageInLowerCase.contains(findSmsWithPassword, true)) {
@@ -159,6 +162,20 @@ class JeevesService() : Service(), LocationListener {
         } catch (e: Exception) {
             currentSMSMessageEvent = null
         }
+    }
+
+    private fun sendCommandsList() {
+        var message = ""
+        message += sharedPref?.getString("call_sms", "") + "-"+ (if (sharedPref?.getBoolean("call_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("location_sms", "") + "-"+ (if (sharedPref?.getBoolean("location_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("silent_sms", "") + "-"+ (if (sharedPref?.getBoolean("silent_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("normal_sms", "") + "-"+ (if (sharedPref?.getBoolean("normal_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("wifi_networks_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_networks_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("report_sms", "") + "-"+ (if (sharedPref?.getBoolean("report_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("find_sms", "") + "-"+ (if (sharedPref?.getBoolean("find_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("wifi_toggle_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true) "On" else "Off") + "\n"
+
+        sendMessage(message)
     }
 
     private fun toggleWifi() {
@@ -310,12 +327,17 @@ class JeevesService() : Service(), LocationListener {
     private fun sendWifiNetworksSMS(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean) {
         try {
             var message = prepareWiFiNetworksString(wifiNetworks, wifiCurState)
-            val sms = SmsManager.getDefault()
-            message = Utils.prepareMessageLength(message)
-            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message, null, null)
+            sendMessage(message)
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
+    }
+
+    private fun sendMessage(message: String) {
+        var message1 = message
+        val sms = SmsManager.getDefault()
+        message1 = Utils.prepareMessageLength(message1)
+        sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message1, null, null)
     }
 
     private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean): String {
