@@ -65,11 +65,23 @@
             android:defaultValue="true"
             android:key="normal_enable"
             android:summary="@string/normal_enable"
-            android:icon="@drawable/ic_volume_up_24dp"/>
+            android:icon="@drawable/ic_volume_normal_24dp"/>
         <EditTextPreference
             android:defaultValue="@string/normal_default_sms"
             android:key="normal_sms"
             android:summary="@string/normal_sms_text_lable" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/max_volume_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="max_volume_enable"
+            android:summary="@string/max_volume_enable"
+            android:icon="@drawable/ic_volume_up_24dp"/>
+        <EditTextPreference
+            android:defaultValue="@string/max_volume_default_sms"
+            android:key="max_volume_sms"
+            android:summary="@string/max_volume_sms_text_lable" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/wifi_networks_label">

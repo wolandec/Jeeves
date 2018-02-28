@@ -21,6 +21,11 @@
     <string name="normal_default_sms">Обычный</string>
     <string name="normal_enable">Включено</string>
 
+    <string name="max_volume_label">Максимальная громкость звонка</string>
+    <string name="max_volume_enable">Включено</string>
+    <string name="max_volume_default_sms">Громко</string>
+    <string name="max_volume_sms_text_lable">Текст СМС для установки максимальной громкости звонка</string>
+
     <string name="wifi_networks_label">Wi-Fi сети</string>
     <string name="wifi_networks_sms_text_lable">Текст СМС для получения списка Wi-Fi сетей</string>
     <string name="wifi_networks_default_sms">Wifi сети</string>
@@ -88,5 +93,6 @@
     <string name="commands_list_sms">Команды</string>
     <string name="commands_list_lable">Список команд</string>
     <string name="commands_list_summary">Текст СМС для получения списка команд и функций включенных на устройстве.</string>
+
 
 </resources>

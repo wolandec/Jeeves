@@ -16,6 +16,7 @@ import android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Telephony
+import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
 import android.util.Log
 import org.greenrobot.eventbus.EventBus
@@ -126,7 +127,11 @@ class JeevesService() : Service(), LocationListener {
                 }
                 pswd + sharedPref?.getString("silent_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("silent_enable", false) == true)
-                        setSoundToNoSound()
+                        setSoundToVibration()
+                }
+                pswd + sharedPref?.getString("max_volume_sms", "")?.toLowerCase() -> {
+                    if (sharedPref?.getBoolean("max_volume_enable", false) == true)
+                        setMaxRingVolume()
                 }
                 pswd + sharedPref?.getString("normal_sms", "")?.toLowerCase() -> {
                     if (sharedPref?.getBoolean("normal_enable", false) == true)
@@ -170,6 +175,7 @@ class JeevesService() : Service(), LocationListener {
         message += sharedPref?.getString("location_sms", "") + "-"+ (if (sharedPref?.getBoolean("location_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("silent_sms", "") + "-"+ (if (sharedPref?.getBoolean("silent_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("normal_sms", "") + "-"+ (if (sharedPref?.getBoolean("normal_enable", false) == true) "On" else "Off") + "\n"
+        message += sharedPref?.getString("max_volume_sms", "") + "-"+ (if (sharedPref?.getBoolean("max_volume_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("wifi_networks_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_networks_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("report_sms", "") + "-"+ (if (sharedPref?.getBoolean("report_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("find_sms", "") + "-"+ (if (sharedPref?.getBoolean("find_enable", false) == true) "On" else "Off") + "\n"
@@ -380,13 +386,18 @@ class JeevesService() : Service(), LocationListener {
         return locationManager!!.isProviderEnabled("gps")
     }
 
+    fun setMaxRingVolume() {
+        val mAudioManager = getSystemService(AppCompatActivity.AUDIO_SERVICE) as AudioManager
+        mAudioManager?.setStreamVolume(AudioManager.STREAM_RING,
+                mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_RING)!!, 0)
+    }
 
     private fun setSoundToNormal() {
         val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
     }
 
-    private fun setSoundToNoSound() {
+    private fun setSoundToVibration() {
         val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
     }

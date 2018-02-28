@@ -47,6 +47,7 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
 
         if (sharedPref?.getString("app_passwd", "") != appPasswd)
             showLoginDialog(false)
+
     }
 
     private fun showLoginDialog(invalidPassword: Boolean) {
@@ -86,7 +87,6 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                     .setNegativeButton(android.R.string.no, null).show()
         }
     }
-
 
     fun onDisplayPopupMIUIPermissions() {
         if (Utils.isMIUI() && sharedPref?.getBoolean("miui_perms_are_checked", false) == false) {
