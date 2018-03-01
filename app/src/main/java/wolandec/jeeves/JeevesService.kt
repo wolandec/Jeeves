@@ -180,7 +180,6 @@ class JeevesService() : Service(), LocationListener {
         message += sharedPref?.getString("report_sms", "") + "-"+ (if (sharedPref?.getBoolean("report_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("find_sms", "") + "-"+ (if (sharedPref?.getBoolean("find_enable", false) == true) "On" else "Off") + "\n"
         message += sharedPref?.getString("wifi_toggle_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true) "On" else "Off") + "\n"
-
         sendMessage(message)
     }
 
