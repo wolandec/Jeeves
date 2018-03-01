@@ -242,6 +242,7 @@ class AlarmActivity : AppCompatActivity() {
         if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
             return
         turnOffFlash()
+        camera?.release()
     }
 
     private fun getCamera(context: Context) {
@@ -250,6 +251,7 @@ class AlarmActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     cameraManager = context.getSystemService(CameraManager::class.java)
                 } else {
+                    camera = Camera.open()
                     params = camera?.getParameters()
                 }
             } catch (e: RuntimeException) {
