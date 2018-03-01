@@ -53,7 +53,7 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
-        var NOTIFY_ID = 0
+        var NOTIFY_ID = 1124
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NOTIFY_ID = 1124
         }
