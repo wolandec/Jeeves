@@ -170,30 +170,42 @@ class JeevesService() : Service(), LocationListener {
     }
 
     private fun sendCommandsList() {
-        var message = ""
-        message += sharedPref?.getString("call_sms", "") + "-"+ (if (sharedPref?.getBoolean("call_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("location_sms", "") + "-"+ (if (sharedPref?.getBoolean("location_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("silent_sms", "") + "-"+ (if (sharedPref?.getBoolean("silent_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("normal_sms", "") + "-"+ (if (sharedPref?.getBoolean("normal_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("max_volume_sms", "") + "-"+ (if (sharedPref?.getBoolean("max_volume_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("wifi_networks_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_networks_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("report_sms", "") + "-"+ (if (sharedPref?.getBoolean("report_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("find_sms", "") + "-"+ (if (sharedPref?.getBoolean("find_enable", false) == true) "On" else "Off") + "\n"
-        message += sharedPref?.getString("wifi_toggle_sms", "") + "-"+ (if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true) "On" else "Off") + "\n"
-        sendMessage(message)
+        try {
+            var message = ""
+            message += sharedPref?.getString("call_sms", "") + "-" + (if (sharedPref?.getBoolean("call_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("location_sms", "") + "-" + (if (sharedPref?.getBoolean("location_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("silent_sms", "") + "-" + (if (sharedPref?.getBoolean("silent_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("normal_sms", "") + "-" + (if (sharedPref?.getBoolean("normal_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("max_volume_sms", "") + "-" + (if (sharedPref?.getBoolean("max_volume_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("wifi_networks_sms", "") + "-" + (if (sharedPref?.getBoolean("wifi_networks_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("report_sms", "") + "-" + (if (sharedPref?.getBoolean("report_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("find_sms", "") + "-" + (if (sharedPref?.getBoolean("find_enable", false) == true) "On" else "Off") + "\n"
+            message += sharedPref?.getString("wifi_toggle_sms", "") + "-" + (if (sharedPref?.getBoolean("wifi_toggle_enable", false) == true) "On" else "Off") + "\n"
+            sendMessage(message)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun toggleWifi() {
-        val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        wifiManager.setWifiEnabled(!getWifiCurState(wifiManager))
+        try {
+            val wifiManager: WifiManager = this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            wifiManager.setWifiEnabled(!getWifiCurState(wifiManager))
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun startAlarm(text: String) {
-        val intent = Intent(this, AlarmActivity::class.java)
-        if (text.replace(" ", "") != "")
-            intent.putExtra("text", text)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        try {
+            val intent = Intent(this, AlarmActivity::class.java)
+            if (text.replace(" ", "") != "")
+                intent.putExtra("text", text)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
 
@@ -238,19 +250,23 @@ class JeevesService() : Service(), LocationListener {
 
 
     private fun sendReport() {
-        val wifiCurState = startWiFiScan()
-        if (!isGpsEnabled()) {
-            proceedReportSend(currentSMSMessageEvent, wifiCurState)
-            return
-        }
-        val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
+        try {
+            val wifiCurState = startWiFiScan()
+            if (!isGpsEnabled()) {
                 proceedReportSend(currentSMSMessageEvent, wifiCurState)
-                unregisterReceiver(this)
+                return
             }
+            val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(p0: Context?, p1: Intent?) {
+                    proceedReportSend(currentSMSMessageEvent, wifiCurState)
+                    unregisterReceiver(this)
+                }
+            }
+            registerReceiver(scanResutsReceiver,
+                    IntentFilter(SCAN_RESULTS_AVAILABLE_ACTION))
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
         }
-        registerReceiver(scanResutsReceiver,
-                IntentFilter(SCAN_RESULTS_AVAILABLE_ACTION))
     }
 
     private fun proceedReportSend(currentSMSMessageEvent: SMSMessageEvent?, wifiCurState: Boolean) {
@@ -275,22 +291,26 @@ class JeevesService() : Service(), LocationListener {
 
     @SuppressLint("MissingPermission")
     private fun sendWifiNetworks() {
-        val wifiCurState = startWiFiScan()
-        if (!isGpsEnabled()) {
-            proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
-            return
-        }
-        if (!wifiCurState) {
-            val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-                override fun onReceive(p0: Context?, p1: Intent?) {
-                    proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
-                    unregisterReceiver(this)
-                }
+        try {
+            val wifiCurState = startWiFiScan()
+            if (!isGpsEnabled()) {
+                proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
+                return
             }
-            registerReceiver(scanResutsReceiver,
-                    IntentFilter(SCAN_RESULTS_AVAILABLE_ACTION))
-        } else {
-            proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
+            if (!wifiCurState) {
+                val scanResutsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+                    override fun onReceive(p0: Context?, p1: Intent?) {
+                        proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
+                        unregisterReceiver(this)
+                    }
+                }
+                registerReceiver(scanResutsReceiver,
+                        IntentFilter(SCAN_RESULTS_AVAILABLE_ACTION))
+            } else {
+                proceedWiFiNetworksSend(currentSMSMessageEvent, wifiCurState)
+            }
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
         }
     }
 
@@ -339,10 +359,14 @@ class JeevesService() : Service(), LocationListener {
     }
 
     private fun sendMessage(message: String) {
-        var message1 = message
-        val sms = SmsManager.getDefault()
-        message1 = Utils.prepareMessageLength(message1)
-        sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message1, null, null)
+        try {
+            var message1 = message
+            val sms = SmsManager.getDefault()
+            message1 = Utils.prepareMessageLength(message1)
+            sms.sendTextMessage(currentSMSMessageEvent!!.phone, null, message1, null, null)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun prepareWiFiNetworksString(wifiNetworks: List<ScanResult>?, wifiCurState: Boolean): String {
@@ -386,19 +410,31 @@ class JeevesService() : Service(), LocationListener {
     }
 
     fun setMaxRingVolume() {
-        val mAudioManager = getSystemService(AppCompatActivity.AUDIO_SERVICE) as AudioManager
-        mAudioManager?.setStreamVolume(AudioManager.STREAM_RING,
-                mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_RING)!!, 0)
+        try {
+            val mAudioManager = getSystemService(AppCompatActivity.AUDIO_SERVICE) as AudioManager
+            mAudioManager?.setStreamVolume(AudioManager.STREAM_RING,
+                    mAudioManager?.getStreamMaxVolume(AudioManager.STREAM_RING)!!, 0)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun setSoundToNormal() {
-        val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+        try {
+            val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun setSoundToVibration() {
-        val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+        try {
+            val audioManager: AudioManager = this.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -451,10 +487,14 @@ class JeevesService() : Service(), LocationListener {
 
     @SuppressLint("MissingPermission")
     private fun callPhone() {
-        val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:" + currentSMSMessageEvent!!.phone)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        try {
+            val intent = Intent(Intent.ACTION_CALL)
+            intent.data = Uri.parse("tel:" + currentSMSMessageEvent!!.phone)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     override fun onLocationChanged(p0: Location?) {

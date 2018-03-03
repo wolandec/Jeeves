@@ -8,10 +8,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import java.io.File
 import java.io.FileInputStream
@@ -152,6 +154,11 @@ class Utils {
             if (message.length > 140)
                 message = message.substring(0, 140)
             return message
+        }
+
+        fun isPermissionGranted(context: Context?, permission: String): Boolean{
+            return ContextCompat.checkSelfPermission(context!!,
+                    permission) == PackageManager.PERMISSION_GRANTED
         }
 
     }

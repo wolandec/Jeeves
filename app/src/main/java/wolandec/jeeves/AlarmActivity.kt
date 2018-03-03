@@ -94,7 +94,7 @@ class AlarmActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_alarm)
         val text = getIntent().getStringExtra("text")
-        if (text!=null)
+        if (text != null)
             findViewById<TextView>(R.id.fullscreen_content).text = text
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -118,22 +118,30 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     fun setBrightness(brightness: Int) {
-        var brightness = brightness
+        try {
+            var brightness = brightness
 
-        if (brightness < 0)
-            brightness = 0
-        else if (brightness > 255)
-            brightness = 255
+            if (brightness < 0)
+                brightness = 0
+            else if (brightness > 255)
+                brightness = 255
 
-        val cResolver = this.contentResolver
-        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness)
+            val cResolver = this.contentResolver
+            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     fun setCurrentBrightness() {
-        val cResolver = this.contentResolver
-        curBrightness = Settings.System.getInt(
-                cResolver,
-                Settings.System.SCREEN_BRIGHTNESS)
+        try {
+            val cResolver = this.contentResolver
+            curBrightness = Settings.System.getInt(
+                    cResolver,
+                    Settings.System.SCREEN_BRIGHTNESS)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     override fun onStart() {
@@ -163,9 +171,13 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     fun setMaxVolume() {
-        mAudioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        originalVolume = mAudioManager?.getStreamVolume(SOUND_STREAM)
-        mAudioManager?.setStreamVolume(SOUND_STREAM, mAudioManager?.getStreamMaxVolume(SOUND_STREAM)!!, 0)
+        try {
+            mAudioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+            originalVolume = mAudioManager?.getStreamVolume(SOUND_STREAM)
+            mAudioManager?.setStreamVolume(SOUND_STREAM, mAudioManager?.getStreamMaxVolume(SOUND_STREAM)!!, 0)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     fun playAlarm() {
@@ -190,14 +202,25 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     private fun setOriginalVolume() {
-        mAudioManager?.setStreamVolume(SOUND_STREAM, originalVolume!!, 0)
+        try {
+            mAudioManager?.setStreamVolume(SOUND_STREAM, originalVolume!!, 0)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun starBlinkWithFlash() {
-        if (!this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
-            return
-        getCamera(this)
-        startBlinkFlash()
+        try {
+            if (!this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
+                return
+            if (Utils.isPermissionGranted(this, android.Manifest.permission.CAMERA))
+                return
+            getCamera(this)
+            startBlinkFlash()
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
+
     }
 
     private fun startBlinkFlash() {

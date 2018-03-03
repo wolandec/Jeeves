@@ -4,14 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.*
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
@@ -132,23 +130,14 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
     private fun checkRegularPermissions() {
         onDisplayPopupMIUIPermissions()
 
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (!Utils.isPermissionGranted(this, Manifest.permission.SEND_SMS) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.RECEIVE_SMS) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.CALL_PHONE) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.CAMERA) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.WRITE_SETTINGS) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.READ_PHONE_STATE) ||
+                !Utils.isPermissionGranted(this, Manifest.permission.CHANGE_WIFI_STATE)) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.RECEIVE_SMS,
                             Manifest.permission.SEND_SMS,
