@@ -92,6 +92,8 @@
     <string name="commands_list_sms">Commands</string>
     <string name="commands_list_lable">Command list</string>
     <string name="commands_list_summary">SMS-text to get available commands list</string>
+    <string name="google_play_lable">Jeeves on Google Play</string>
+    <string name="version_lable">Version</string>
 
 
 </resources>

@@ -14,6 +14,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 
 
@@ -46,6 +48,27 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         if (sharedPref?.getString("app_passwd", "") != appPasswd)
             showLoginDialog(false)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        val versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName
+        menu?.getItem(1)?.title = menu?.getItem(1)?.title.toString() + ": " + versionName
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.google_play -> {
+                val appPackageName = packageName
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)))
+                } catch (anfe: android.content.ActivityNotFoundException) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)))
+                }
+            }
+        }
+        return true
     }
 
     private fun showLoginDialog(invalidPassword: Boolean) {
@@ -205,7 +228,6 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
             showLoginDialog(true)
         }
     }
-
 
 
 }

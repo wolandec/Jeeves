@@ -93,6 +93,8 @@
     <string name="commands_list_sms">Команды</string>
     <string name="commands_list_lable">Список команд</string>
     <string name="commands_list_summary">Текст СМС для получения списка команд и функций включенных на устройстве.</string>
+    <string name="google_play_lable">Дживс на Google Play</string>
+    <string name="version_lable">Версия</string>
 
 
 </resources>

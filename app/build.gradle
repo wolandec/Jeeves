@@ -10,8 +10,8 @@ android {
         applicationId "wolandec.jeeves"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 33
-        versionName "0.1.20_beta"
+        versionCode 34
+        versionName "0.1.21_beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
