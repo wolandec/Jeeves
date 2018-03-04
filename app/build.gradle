@@ -37,5 +37,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'org.greenrobot:eventbus:3.1.1'
-    compile 'agency.tango.android:material-intro-screen:{latest_release}'
+    compile 'agency.tango.android:material-intro-screen:0.0.5'
 }

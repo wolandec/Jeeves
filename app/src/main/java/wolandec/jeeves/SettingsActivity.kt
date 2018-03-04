@@ -48,12 +48,13 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         if (sharedPref?.getString("app_passwd", "") != appPasswd)
             showLoginDialog(false)
 
+        startActivity(Intent(this, HelpActivity::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         val versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName
-        menu?.getItem(1)?.title = menu?.getItem(1)?.title.toString() + ": " + versionName
+        menu?.getItem(2)?.title = menu?.getItem(2)?.title.toString() + ": " + versionName
         return true
     }
 
@@ -65,6 +66,13 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)))
                 } catch (anfe: android.content.ActivityNotFoundException) {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)))
+                }
+            }
+            R.id.help -> {
+                try {
+                    startActivity(Intent(this,HelpActivity::class.java))
+                } catch (e: Exception) {
+                    Log.d(LOG_TAG, e.toString())
                 }
             }
         }
