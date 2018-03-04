@@ -108,7 +108,12 @@ class AlarmActivity : AppCompatActivity() {
         // while interacting with the UI.
         dummy_button.setOnTouchListener(mDelayHideTouchListener)
         EventBus.getDefault().register(this)
-        startAlarm()
+        try {
+            startAlarm()
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
+
         super.onCreate(savedInstanceState)
     }
 
@@ -220,7 +225,6 @@ class AlarmActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.d(LOG_TAG, e.toString())
         }
-
     }
 
     private fun startBlinkFlash() {
@@ -261,11 +265,16 @@ class AlarmActivity : AppCompatActivity() {
     }
 
     fun stopBlinkWithFlash() {
-        flashTimer?.cancel()
-        if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
-            return
-        turnOffFlash()
-        camera?.release()
+        try {
+            flashTimer?.cancel()
+            if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
+                return
+            turnOffFlash()
+            camera?.release()
+        } catch (e: Exception) {
+            camera?.release()
+            Log.d(LOG_TAG, e.toString())
+        }
     }
 
     private fun getCamera(context: Context) {
