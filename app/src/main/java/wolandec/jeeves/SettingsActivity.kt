@@ -21,7 +21,6 @@ import android.widget.Toast
 
 class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogListener {
 
-
     val LOG_TAG = this::class.java.simpleName
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
@@ -33,7 +32,6 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         setContentView(R.layout.activity_main)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
 
-        checkPermissions()
         if (sharedPref?.getBoolean("enable_jeeves", false) == true) {
             registerBroadcastService()
         }
@@ -48,7 +46,8 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         if (sharedPref?.getString("app_passwd", "") != appPasswd)
             showLoginDialog(false)
 
-        startActivity(Intent(this, HelpActivity::class.java))
+        if (sharedPref?.getBoolean(Utils.NEED_HELP_DIALOG, true) == true)
+            startActivity(Intent(this, HelpActivity::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -124,8 +123,8 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                         Utils.getMIUIVersion().equals("V6") ||
                         Utils.getMIUIVersion().equals("V7")) {
                     AlertDialog.Builder(this)
-                            .setTitle(R.string.perm_dialog_title)
-                            .setMessage(R.string.perm_dialog_text)
+                            .setTitle(R.string.xiaomi_perm_dialog_title)
+                            .setMessage(R.string.xiaomi_perm_dialog_text)
                             .setIcon(R.drawable.ic_icon)
                             .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
                                 val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
@@ -140,8 +139,8 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                 if (Utils.getMIUIVersion().equals("V8")) {
                     // MIUI 8
                     AlertDialog.Builder(this)
-                            .setTitle(R.string.perm_dialog_title)
-                            .setMessage(R.string.perm_dialog_text)
+                            .setTitle(R.string.xiaomi_perm_dialog_title)
+                            .setMessage(R.string.xiaomi_perm_dialog_text)
                             .setIcon(R.drawable.ic_icon)
                             .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
                                 val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
