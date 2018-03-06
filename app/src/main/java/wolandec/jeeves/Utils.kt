@@ -31,7 +31,8 @@ class Utils {
 
         val NEED_HELP_DIALOG = "need_help_dialog"
         val STARTED_AT_BOOT = "started_at_boot"
-        val MIUI_PERMS_ERE_CHECKED = "miui_perms_are_checked"
+        val MIUI_PERMS_ARE_CHECKED = "miui_perms_are_checked"
+        val CHECK_PERMISSIONS = "check_perm"
 
         private val LOG_TAG = this::class.java.simpleName
 
@@ -53,7 +54,7 @@ class Utils {
         fun setMIUIPermsAreCheckedToTrue(context: Context?) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val sharedPrefEditor: SharedPreferences.Editor = sharedPref.edit()
-            sharedPrefEditor.putBoolean(MIUI_PERMS_ERE_CHECKED, true)
+            sharedPrefEditor.putBoolean(MIUI_PERMS_ARE_CHECKED, true)
             sharedPrefEditor.commit()
         }
 

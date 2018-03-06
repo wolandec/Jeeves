@@ -56,6 +56,9 @@
     <string name="startup_on_boot_dialog_text">Jeeves needs to be autostarted at boot, please allow it in the settings.</string>
     <string name="dont_disturb_perm_dialog_title">Modes maintainig</string>
     <string name="dont_disturb_perm_dialog_text">To enable turn your device to vibration mode, please, give a permission to Jeeves.</string>
+    <string name="perm_dialog_title">Проверьте разрешения</string>
+    <string name="perm_dialog_text">Дживсу требуются некоторые разрешения, разрешите всё, если хотите, чтобы работали все функции.
+        СМС нужно разрешить в любом случае иначе смысл приложения теряется.</string>
     <string name="xiaomi_perm_dialog_title">Check permissions</string>
     <string name="xiaomi_perm_dialog_text">Jeeves needs to have some permissions, please, check that the always mode is selected.</string>
 
@@ -101,6 +104,7 @@
     <string name="perm_button_text">Grand</string>
     <string name="hello_title">Jeeves at your service</string>
     <string name="hello_text">Поздравляем, Вы установили приложение для управления этим устройством. Обращаем ваше мнимание, что Дживс должен работать на управляемом устройстве, то ето за которым будут наблюдать и управлять, проще говоря на телефоне ребёнка а не родителя(хотя в каких-то ситуациях и наоборот :)). Работать с Дживс просто, отправляйте с любого другого телефона команды на это устройство(текст команд можно посмотреть в программе) и Дживс обработает их, ответит в СМС или сделает какие-то операции с устройством. Попробуйте прямо сейчас отправьте через СМС слово Отчёт с другого телефона на это устройство.</string>
+    <string name="check_perm_lable">Check permissions</string>
 
 
 </resources>

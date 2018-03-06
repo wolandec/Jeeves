@@ -47,13 +47,13 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
             showLoginDialog(false)
 
         if (sharedPref?.getBoolean(Utils.NEED_HELP_DIALOG, true) == true)
-            startActivity(Intent(this, HelpActivity::class.java))
+            startCheckingPermissions(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         val versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName
-        menu?.getItem(2)?.title = menu?.getItem(2)?.title.toString() + ": " + versionName
+        menu?.getItem(3)?.title = menu?.getItem(3)?.title.toString() + ": " + versionName
         return true
     }
 
@@ -69,13 +69,26 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
             }
             R.id.help -> {
                 try {
-                    startActivity(Intent(this,HelpActivity::class.java))
+                    startCheckingPermissions(false)
+                } catch (e: Exception) {
+                    Log.d(LOG_TAG, e.toString())
+                }
+            }
+            R.id.check_perm -> {
+                try {
+                    startCheckingPermissions(true)
                 } catch (e: Exception) {
                     Log.d(LOG_TAG, e.toString())
                 }
             }
         }
         return true
+    }
+
+    private fun startCheckingPermissions(checkPermissions: Boolean) {
+        val intent = Intent(this, HelpActivity::class.java)
+        if (checkPermissions) intent.putExtra(Utils.CHECK_PERMISSIONS, true)
+        startActivity(intent)
     }
 
     private fun showLoginDialog(invalidPassword: Boolean) {

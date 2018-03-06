@@ -6,9 +6,12 @@
         android:id="@+id/help"
         android:title="@string/help_lable" />
     <item
+        android:id="@+id/check_perm"
+        android:title="@string/check_perm_lable" />
+    <item
         android:id="@+id/google_play"
         android:title="@string/google_play_lable" />
     <item
         android:id="@+id/version"
-        android:title="@string/version_lable" />
+        android:title="@string/version_lable"/>
 </menu>

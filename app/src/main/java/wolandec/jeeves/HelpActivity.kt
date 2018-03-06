@@ -24,17 +24,26 @@ class HelpActivity : IntroActivity() {
     val LOG_TAG = this::class.java.simpleName
     var sharedPref: SharedPreferences? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         buttonBackFunction = BUTTON_BACK_FUNCTION_BACK
-        createPermissionsSlide()
-        createOnBootStartupPermissionSlide()
-        createDoNotDisturbSlide()
-        onDisplayPopupMIUIPermissions()
+        if (getIntent().getBooleanExtra(Utils.CHECK_PERMISSIONS, false) == true) {
+            createPermissionsSlide()
+//            if (sharedPref?.getBoolean(Utils.STARTED_AT_BOOT, false) == true ||
+//                    getIntent().getBooleanExtra(Utils.CHECK_PERMISSIONS, false) == true) {
+                createOnBootStartupPermissionSlide()
+//            }
+            createDoNotDisturbSlide()
+//            if ((Utils.isMIUI() && sharedPref?.getBoolean(Utils.MIUI_PERMS_ARE_CHECKED, false) == false) ||
+//                    getIntent().getBooleanExtra(Utils.CHECK_PERMISSIONS, false) == true) {
+                onDisplayPopupMIUIPermissions()
+//            }
+        }
         createHelloSlide()
 
-//        Utils.changeNeedHelpDialogPrefTo(this, false)
+        Utils.changeNeedHelpDialogPrefTo(this, false)
     }
 
 
@@ -134,52 +143,50 @@ class HelpActivity : IntroActivity() {
     }
 
     fun onDisplayPopupMIUIPermissions() {
-        if (Utils.isMIUI() && sharedPref?.getBoolean("miui_perms_are_checked", false) == false) {
-            try {
-                if (Utils.getMIUIVersion().equals("V5") ||
-                        Utils.getMIUIVersion().equals("V6") ||
-                        Utils.getMIUIVersion().equals("V7")) {
-                    addSlide(SimpleSlide.Builder()
-                            .background(R.color.colorPrimaryDark)
-                            .backgroundDark(R.color.colorAccent)
-                            .title(resources.getString(R.string.xiaomi_perm_dialog_title))
-                            .description(resources.getString(R.string.xiaomi_perm_dialog_text))
-                            .buttonCtaLabel(R.string.perm_button_text)
-                            .buttonCtaClickListener(object : View.OnClickListener {
-                                override fun onClick(p0: View?) {
-                                    val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
-                                    localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
-                                    localIntent.putExtra("extra_pkgname", getPackageName());
-                                    startActivity(localIntent);
-                                    Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
-                                    nextSlide()
-                                }
-                            })
-                            .build())
-                }
-                if (Utils.getMIUIVersion().equals("V8")) {
-                    // MIUI 8
-                    addSlide(SimpleSlide.Builder()
-                            .background(R.color.colorPrimaryDark)
-                            .backgroundDark(R.color.colorAccent)
-                            .title(resources.getString(R.string.xiaomi_perm_dialog_title))
-                            .description(resources.getString(R.string.xiaomi_perm_dialog_text))
-                            .buttonCtaLabel(R.string.perm_button_text)
-                            .buttonCtaClickListener(object : View.OnClickListener {
-                                override fun onClick(p0: View?) {
-                                    val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
-                                    localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
-                                    localIntent.putExtra("extra_pkgname", getPackageName());
-                                    startActivity(localIntent);
-                                    Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
-                                    nextSlide()
-                                }
-                            })
-                            .build())
-                }
-            } catch (e: Exception) {
-                Log.d(LOG_TAG, e.toString())
+        try {
+            if (Utils.getMIUIVersion().equals("V5") ||
+                    Utils.getMIUIVersion().equals("V6") ||
+                    Utils.getMIUIVersion().equals("V7")) {
+                addSlide(SimpleSlide.Builder()
+                        .background(R.color.colorPrimaryDark)
+                        .backgroundDark(R.color.colorAccent)
+                        .title(resources.getString(R.string.xiaomi_perm_dialog_title))
+                        .description(resources.getString(R.string.xiaomi_perm_dialog_text))
+                        .buttonCtaLabel(R.string.perm_button_text)
+                        .buttonCtaClickListener(object : View.OnClickListener {
+                            override fun onClick(p0: View?) {
+                                val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
+                                localIntent.putExtra("extra_pkgname", getPackageName());
+                                startActivity(localIntent);
+                                Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
+                                nextSlide()
+                            }
+                        })
+                        .build())
             }
+            if (Utils.getMIUIVersion().equals("V8")) {
+                // MIUI 8
+                addSlide(SimpleSlide.Builder()
+                        .background(R.color.colorPrimaryDark)
+                        .backgroundDark(R.color.colorAccent)
+                        .title(resources.getString(R.string.xiaomi_perm_dialog_title))
+                        .description(resources.getString(R.string.xiaomi_perm_dialog_text))
+                        .buttonCtaLabel(R.string.perm_button_text)
+                        .buttonCtaClickListener(object : View.OnClickListener {
+                            override fun onClick(p0: View?) {
+                                val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                                localIntent.putExtra("extra_pkgname", getPackageName());
+                                startActivity(localIntent);
+                                Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
+                                nextSlide()
+                            }
+                        })
+                        .build())
+            }
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
         }
     }
 
