@@ -143,7 +143,7 @@ class Utils {
                         .setContentIntent(pendingIntent)
                         .setTicker("${context.getString(R.string.app_name)}: ${context.getString(R.string.ready_to_work)}")
             } else {
-                builder = NotificationCompat.Builder(context, "wolandec.jeeves")
+                builder = NotificationCompat.Builder(context, "com.wolandec.jeeves")
                         .setDefaults(0)
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     builder.setSmallIcon(R.drawable.ic_icon)

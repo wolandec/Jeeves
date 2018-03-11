@@ -101,15 +101,20 @@
     <string name="perm_write_settings_title">Device maintain</string>
     <string name="perm_write_settings_text">For the sake of maintaining brightness, WiFi etc, it is
         must to allow aplication to change system settings. Don't worry it is nothing bad there.</string>
-    <string name="perm_button_text">Grand</string>
+    <string name="perm_button_text">Grant</string>
     <string name="hello_title">Jeeves at your service</string>
-    <string name="hello_text">Поздравляем, Вы установили приложение для управления этим устройством.
-        Обращаем ваше мнимание, что Дживс должен работать на управляемом устройстве, то ето за
-        которым будут наблюдать и управлять, проще говоря на телефоне ребёнка а не родителя(хотя в
-        каких-то ситуациях и наоборот :)). Работать с Дживс просто, отправляйте с любого другого
-        телефона команды на это устройство(текст команд можно посмотреть в программе) и Дживс
-        обработает их, ответит в СМС или сделает какие-то операции с устройством. Попробуйте прямо
-        сейчас отправьте через СМС слово Отчёт с другого телефона на это устройство.</string>
+    <string name="hello_text">Congratulations! \n\n
+
+        ATTENTION!\n For the robust working, please, include Jeeves to the list of saved applications,
+        if there is one in your system.\n\n
+
+        Please note, that Jeeves has to work on the controlled device, not on a command one.\n\n
+
+        Working with Jeeves is simple: just send a command from the any other device by SMS and get
+        an answer(for example a GPS coordinates) from the controlled one, or Jeeves maintain that,
+        switch WiFi or something.\n\n
+
+        Try it right now! Send a word \"Report\" from other phone to this device.</string>
     <string name="check_perm_lable">Check permissions</string>
 
 
