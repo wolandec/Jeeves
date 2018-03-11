@@ -33,12 +33,12 @@ class HelpActivity : IntroActivity() {
             createPermissionsSlide()
 //            if (sharedPref?.getBoolean(Utils.STARTED_AT_BOOT, false) == true ||
 //                    getIntent().getBooleanExtra(Utils.CHECK_PERMISSIONS, false) == true) {
-                createOnBootStartupPermissionSlide()
+            createOnBootStartupPermissionSlide()
 //            }
             createDoNotDisturbSlide()
 //            if ((Utils.isMIUI() && sharedPref?.getBoolean(Utils.MIUI_PERMS_ARE_CHECKED, false) == false) ||
 //                    getIntent().getBooleanExtra(Utils.CHECK_PERMISSIONS, false) == true) {
-                onDisplayPopupMIUIPermissions()
+            onDisplayPopupMIUIPermissions()
 //            }
         }
         createHelloSlide()
@@ -206,8 +206,12 @@ class HelpActivity : IntroActivity() {
                     .buttonCtaLabel(R.string.perm_button_text)
                     .buttonCtaClickListener(object : View.OnClickListener {
                         override fun onClick(p0: View?) {
-                            val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                            startActivity(intent)
+                            try {
+                                val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                Log.d(LOG_TAG, e.toString())
+                            }
                             nextSlide()
                         }
                     })
