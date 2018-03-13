@@ -13,12 +13,16 @@ import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION
-import android.os.*
+import android.os.BatteryManager
+import android.os.Bundle
+import android.os.IBinder
+import android.os.Parcel
 import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
 import android.util.Log
+import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -34,6 +38,7 @@ class JeevesService() : Service(), LocationListener {
     var sharedPref: SharedPreferences? = null
     var sharedPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
     private var intent: Intent? = null
+    var counter = 0
 
     var location: Location? = null
     var brReceiver: JeevesReceiver = JeevesReceiver()
@@ -45,6 +50,8 @@ class JeevesService() : Service(), LocationListener {
     private fun registerIntentReceiver() {
         registerReceiver(brReceiver,
                 IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
+        registerReceiver(brReceiver,
+                IntentFilter("com.wolandec.jeeves.startService"))
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -53,13 +60,6 @@ class JeevesService() : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
-        var NOTIFY_ID = 1124
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NOTIFY_ID = 1124
-        }
-
-        val notification = Utils.getNotification(this)
-        startForeground(NOTIFY_ID, notification)
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
@@ -73,7 +73,7 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-
+        Toast.makeText(applicationContext, "I'm created", Toast.LENGTH_SHORT).show()
         startAlarmForJeeves()
     }
 
@@ -83,6 +83,7 @@ class JeevesService() : Service(), LocationListener {
         val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, 0, (30 * 1000).toLong(), pintent)
     }
+
 
     fun proceedPrefChange() {
         if (sharedPref?.getBoolean("enable_jeeves", false) == false) {
@@ -95,16 +96,22 @@ class JeevesService() : Service(), LocationListener {
         sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
         unregisterReceiver(brReceiver)
         EventBus.getDefault().unregister(this)
+        Toast.makeText(applicationContext, "I'm destroyed", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId);
         this.intent = intent
+        Toast.makeText(applicationContext, "I'm started", Toast.LENGTH_SHORT).show()
         return START_STICKY;
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        val broadcastIntent = Intent("com.wolandec.jeeves.startService");
+        Toast.makeText(applicationContext, "I'm removed", Toast.LENGTH_SHORT).show()
+        sendBroadcast(broadcastIntent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

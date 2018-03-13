@@ -1,10 +1,7 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -19,6 +16,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
+
+
 
 
 /**
@@ -172,6 +171,16 @@ class Utils {
         fun isPermissionGranted(context: Context?, permission: String): Boolean{
             return ContextCompat.checkSelfPermission(context!!,
                     permission) == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun isMyServiceRunning(context: Context? ,serviceClass: Class<*>): Boolean {
+            val manager = context?.applicationContext?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.name == service.service.className) {
+                    return true
+                }
+            }
+            return false
         }
 
     }

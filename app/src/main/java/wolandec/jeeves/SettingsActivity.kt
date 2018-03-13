@@ -33,12 +33,12 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
 
         if (sharedPref?.getBoolean("enable_jeeves", false) == true) {
-            registerBroadcastService()
+            registerJeevesService()
         }
         sharedPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sP, key ->
             if (key == "enable_jeeves") {
                 if (sharedPref?.getBoolean("enable_jeeves", false) == true)
-                    registerBroadcastService()
+                    registerJeevesService()
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener);
@@ -223,17 +223,15 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
         }
     }
 
-    private fun registerBroadcastService() {
-        val i = Intent("wolandec.jeeves.JeevesService")
-        i.setClass(this, JeevesService::class.java!!)
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                this!!.startForegroundService(i)
-            } else {
+    private fun registerJeevesService() {
+        if (Utils.isMyServiceRunning(this, JeevesService::class.java) == false) {
+            try {
+                val i = Intent("wolandec.jeeves.JeevesService")
+                i.setClass(this, JeevesService::class.java!!)
                 this!!.startService(i)
+            } catch (e: Exception) {
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             }
-        } catch (e: Exception) {
-            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
     }
 
