@@ -22,7 +22,6 @@ import android.provider.Telephony
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
 import android.util.Log
-import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -73,7 +72,7 @@ class JeevesService() : Service(), LocationListener {
             }
         }
         sharedPref?.registerOnSharedPreferenceChangeListener(sharedPrefChangeListener)
-        Toast.makeText(applicationContext, "I'm created", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, "I'm created", Toast.LENGTH_SHORT).show()
         startAlarmForJeeves()
     }
 
@@ -96,21 +95,21 @@ class JeevesService() : Service(), LocationListener {
         sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
         unregisterReceiver(brReceiver)
         EventBus.getDefault().unregister(this)
-        Toast.makeText(applicationContext, "I'm destroyed", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, "I'm destroyed", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId);
         this.intent = intent
-        Toast.makeText(applicationContext, "I'm started", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, "I'm started", Toast.LENGTH_SHORT).show()
         return START_STICKY;
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         val broadcastIntent = Intent("com.wolandec.jeeves.startService");
-        Toast.makeText(applicationContext, "I'm removed", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, "I'm removed", Toast.LENGTH_SHORT).show()
         sendBroadcast(broadcastIntent);
     }
 
