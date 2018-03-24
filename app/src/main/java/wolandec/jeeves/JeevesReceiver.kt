@@ -31,6 +31,10 @@ class JeevesReceiver() : BroadcastReceiver() {
             startJeevesService(context)
         }
 
+        if(intent?.getAction().equals(Intent.ACTION_BATTERY_LOW)) {
+            EventBus.getDefault().post(BatteryLowEvent())
+        }
+
         if (intent?.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             val bundle = intent?.getExtras()
             var messages: Array<SmsMessage?>

@@ -132,4 +132,15 @@
             android:summary="@string/wifi_toggle_sms_text_lable" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/battery_low_label">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="battery_low_enable"
+            android:summary="@string/battery_low_enable"
+            android:icon="@drawable/ic_battery_20_black_24dp"/>
+        <EditTextPreference
+            android:key="battery_low_phones"
+            android:summary="@string/battery_low_sms_text_lable" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

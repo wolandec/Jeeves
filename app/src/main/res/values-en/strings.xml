@@ -48,13 +48,18 @@
     <string name="wifi_toggle_default_sms">WiFi toggle</string>
     <string name="wifi_toggle_enable">Enable</string>
 
+    <string name="battery_low_label">Battery low warning</string>
+    <string name="battery_low_sms_text_lable">To this number will be sent a battery low warning.</string>
+    <string name="battery_low_default_sms">Low battery</string>
+    <string name="battery_low_enable">Enable</string>
+
     <string name="on_boot_string">Jeeves woke up.</string>
     <string name="on_stop_string">Jeeves is sleeping.</string>
     <string name="wifi_net_label">Wi-Fi networks</string>
     <string name="enable_jeeves">Enable</string>
     <string name="startup_on_boot_dialog_title">Autostart at boot</string>
     <string name="startup_on_boot_dialog_text">Jeeves needs to be autostarted at boot, please allow it in the settings.</string>
-    <string name="dont_disturb_perm_dialog_title">Modes maintainig</string>
+    <string name="dont_disturb_perm_dialog_title">Modes maintaining</string>
     <string name="dont_disturb_perm_dialog_text">To enable turn your device to vibration mode, please, give a permission to Jeeves.</string>
     <string name="perm_dialog_title">Проверьте разрешения</string>
     <string name="perm_dialog_text">Дживсу требуются некоторые разрешения, разрешите всё, если хотите, чтобы работали все функции.
@@ -98,7 +103,7 @@
     <string name="google_play_lable">Jeeves on Google Play</string>
     <string name="version_lable">Version</string>
     <string name="help_lable">Help</string>
-    <string name="perm_write_settings_title">Device maintain</string>
+    <string name="perm_write_settings_title">Device maintaining</string>
     <string name="perm_write_settings_text">For the sake of maintaining brightness, WiFi etc, it is
         must to allow aplication to change system settings. Don't worry it is nothing bad there.</string>
     <string name="perm_button_text">Grant</string>

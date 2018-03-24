@@ -49,6 +49,11 @@
     <string name="wifi_toggle_default_sms">WiFi переключить</string>
     <string name="wifi_toggle_enable">Включено</string>
 
+    <string name="battery_low_label">Низкий уровень аккумулятора</string>
+    <string name="battery_low_sms_text_lable">На этот номер будет выслано предупреждение о низком заряде аккумулятора.</string>
+    <string name="battery_low_default_sms">Низкий заряд аккумулятора</string>
+    <string name="battery_low_enable">Включено</string>
+
     <string name="on_boot_string">Jeeves проснулся.</string>
     <string name="on_stop_string">Jeeves спит.</string>
     <string name="wifi_net_label">Wi-Fi сети</string>

@@ -48,6 +48,8 @@ class JeevesService() : Service(), LocationListener {
 
     private fun registerIntentReceiver() {
         registerReceiver(brReceiver,
+                IntentFilter(Intent.ACTION_BATTERY_LOW))
+        registerReceiver(brReceiver,
                 IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION))
         registerReceiver(brReceiver,
                 IntentFilter("com.wolandec.jeeves.startService"))
@@ -111,6 +113,20 @@ class JeevesService() : Service(), LocationListener {
         val broadcastIntent = Intent("com.wolandec.jeeves.startService");
 //        Toast.makeText(applicationContext, "I'm removed", Toast.LENGTH_SHORT).show()
         sendBroadcast(broadcastIntent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun proceedSMS(batteryLowEvent: BatteryLowEvent) {
+        try {
+            if (sharedPref?.getBoolean("battery_low_enable", false) == false)
+                return
+            currentSMSMessageEvent = SMSMessageEvent(sharedPref!!.getString("battery_low_phones", ""), "")
+            var message = "${getString(R.string.battery)}-${getBatteryLevel()}%"
+            sendMessage(getString(R.string.battery_low_default_sms) + ":" + message)
+        } catch (e: Exception) {
+            Log.d(LOG_TAG, e.toString())
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
