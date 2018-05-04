@@ -175,11 +175,15 @@ class HelpActivity : IntroActivity() {
                         .buttonCtaLabel(R.string.perm_button_text)
                         .buttonCtaClickListener(object : View.OnClickListener {
                             override fun onClick(p0: View?) {
-                                val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
-                                localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
-                                localIntent.putExtra("extra_pkgname", getPackageName());
-                                startActivity(localIntent);
-                                Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
+                                try {
+                                    val localIntent = Intent("miui.intent.action.APP_PERM_EDITOR");
+                                    localIntent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
+                                    localIntent.putExtra("extra_pkgname", getPackageName());
+                                    startActivity(localIntent);
+                                    Utils.setMIUIPermsAreCheckedToTrue(applicationContext)
+                                } catch (e: Exception) {
+                                    Log.d(LOG_TAG, e.toString())
+                                }
                                 nextSlide()
                             }
                         })
