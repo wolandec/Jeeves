@@ -180,7 +180,7 @@ class JeevesService() : Service(), LocationListener {
                 }
             }
             if (messageInLowerCase != findSmsWithPassword &&
-                    messageInLowerCase.contains(findSmsWithPassword, true)) {
+                    messageInLowerCase.indexOf(findSmsWithPassword,0)==0) {
                 startAlarm(smsMessageEvent.message.substring(
                         messageInLowerCase.indexOf(findSmsWithPassword) + findSmsWithPassword.length + 1,
                         messageInLowerCase.length))
