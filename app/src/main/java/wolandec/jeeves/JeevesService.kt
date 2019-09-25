@@ -19,9 +19,9 @@ import android.os.IBinder
 import android.os.Parcel
 import android.preference.PreferenceManager
 import android.provider.Telephony
-import android.support.v7.app.AppCompatActivity
 import android.telephony.SmsManager
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

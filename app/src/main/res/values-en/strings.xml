@@ -105,7 +105,7 @@
     <string name="help_lable">Help</string>
     <string name="perm_write_settings_title">Device maintaining</string>
     <string name="perm_write_settings_text">For the sake of maintaining brightness, WiFi etc, it is
-        must to allow aplication to change system settings. Don't worry it is nothing bad there.</string>
+        must to allow aplication to change system settings. Don\'t worry it is nothing bad there.</string>
     <string name="perm_button_text">Grant</string>
     <string name="hello_title">Jeeves at your service</string>
     <string name="hello_text">Congratulations! \n\n

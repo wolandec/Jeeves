@@ -1,14 +1,13 @@
 package wolandec.jeeves
 
-import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 
 
 /**
@@ -30,8 +29,8 @@ class LoginDialogFragment() : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity);
-        val inflater = activity.layoutInflater
-        builder.setView(inflater.inflate(R.layout.login_dialog, null))
+        val inflater = activity?.layoutInflater
+        builder.setView(inflater?.inflate(R.layout.login_dialog, null))
                 .setPositiveButton(R.string.ok_button_text, object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         loginListener?.onDialogPositiveClick(this@LoginDialogFragment)
@@ -44,19 +43,19 @@ class LoginDialogFragment() : DialogFragment() {
                 })
         return builder.create();
     }
-
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-        loginListener = activity as LoginDialogListener?
-    }
+//
+//    override fun onAttach(activity: Activity?) {
+//        super.onAttach(activity)
+//        loginListener = activity as LoginDialogListener?
+//    }
 
 
     override fun onStart() {
         super.onStart()
-        passView = dialog.findViewById(R.id.password)
+        passView = dialog?.findViewById(R.id.password)
         if (invalidPassword)
-            dialog.findViewById<TextView>(R.id.invalidPassword).visibility = View.VISIBLE
+            dialog?.findViewById<TextView>(R.id.invalidPassword)?.visibility = View.VISIBLE
         else
-            dialog.findViewById<TextView>(R.id.invalidPassword).visibility = View.GONE
+            dialog?.findViewById<TextView>(R.id.invalidPassword)?.visibility = View.GONE
     }
 }
