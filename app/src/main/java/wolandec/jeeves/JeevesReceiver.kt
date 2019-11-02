@@ -3,10 +3,12 @@ package wolandec.jeeves
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.telephony.SmsMessage
 import android.util.Log
 import android.widget.Toast
 import org.greenrobot.eventbus.EventBus
+import android.widget.Toast.makeText as makeText1
 
 
 /**
@@ -19,19 +21,23 @@ class JeevesReceiver() : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        if(intent?.getAction().equals("com.wolandec.jeeves.startService")) {
-            context?.startService(Intent(context, JeevesService::class.java))
+        if (intent?.getAction().equals("com.wolandec.jeeves.startService")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context?.startForegroundService(Intent(context, JeevesService::class.java))
+            } else {
+                context?.startService(Intent(context, JeevesService::class.java))
+            }
             Toast.makeText(context, "Start from receiver", Toast.LENGTH_SHORT).show()
         }
 
-        if (    intent?.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
+        if (intent?.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 intent?.getAction().equals("android.intent.action.QUICKBOOT_POWERON") ||
                 intent?.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED) ||
                 intent?.getAction().equals(Intent.ACTION_LOCKED_BOOT_COMPLETED)) {
             startJeevesService(context)
         }
 
-        if(intent?.getAction().equals(Intent.ACTION_BATTERY_LOW)) {
+        if (intent?.getAction().equals(Intent.ACTION_BATTERY_LOW)) {
             EventBus.getDefault().post(BatteryLowEvent())
         }
 
@@ -61,10 +67,14 @@ class JeevesReceiver() : BroadcastReceiver() {
         val i = Intent("wolandec.jeeves.JeevesService")
         i.setClass(context, JeevesService::class.java!!)
         try {
-            context!!.startService(i)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context!!.startForegroundService(i)
+            } else {
+                context!!.startService(i)
+            }
             Utils.setFlagStartedAtBootToTrue(context)
         } catch (e: Exception) {
-            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            makeText1(context, e.message, Toast.LENGTH_LONG).show()
         }
     }
 

@@ -1,10 +1,9 @@
 package wolandec.jeeves
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.*
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -13,15 +12,13 @@ import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION
-import android.os.BatteryManager
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcel
+import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Telephony
 import android.telephony.SmsManager
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -62,6 +59,21 @@ class JeevesService() : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val NOTIFICATION_ID = (System.currentTimeMillis() % 10000);
+            val chan = NotificationChannel("com.wolandec.Jeeves",
+                    "JeevesService", NotificationManager.IMPORTANCE_NONE)
+            chan.lightColor = Color.BLUE
+            chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            service.createNotificationChannel(chan)
+
+            startForeground(NOTIFICATION_ID.toInt(), NotificationCompat.Builder(this, "com.wolandec.Jeeves")
+                    .setSmallIcon(R.drawable.ic_icon)
+                    .setContentTitle("Jeeves")
+                    .setContentText("")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT).build());
+        }
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
         }
@@ -82,7 +94,12 @@ class JeevesService() : Service(), LocationListener {
         val intent = Intent(this, JeevesService::class.java)
         val pintent = PendingIntent.getService(this, 0, intent, 0)
         val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, 0, (30 * 1000).toLong(), pintent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                    + 0.toLong(), pintent)
+        } else {
+            alarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+0.toLong(), pintent)
+        }
     }
 
 
@@ -97,6 +114,7 @@ class JeevesService() : Service(), LocationListener {
         sharedPref?.unregisterOnSharedPreferenceChangeListener(sharedPrefChangeListener)
         unregisterReceiver(brReceiver)
         EventBus.getDefault().unregister(this)
+        startAlarmForJeeves()
 //        Toast.makeText(applicationContext, "I'm destroyed", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
@@ -111,7 +129,6 @@ class JeevesService() : Service(), LocationListener {
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         val broadcastIntent = Intent("com.wolandec.jeeves.startService");
-//        Toast.makeText(applicationContext, "I'm removed", Toast.LENGTH_SHORT).show()
         sendBroadcast(broadcastIntent);
     }
 
@@ -180,7 +197,7 @@ class JeevesService() : Service(), LocationListener {
                 }
             }
             if (messageInLowerCase != findSmsWithPassword &&
-                    messageInLowerCase.indexOf(findSmsWithPassword,0)==0) {
+                    messageInLowerCase.indexOf(findSmsWithPassword, 0) == 0) {
                 startAlarm(smsMessageEvent.message.substring(
                         messageInLowerCase.indexOf(findSmsWithPassword) + findSmsWithPassword.length + 1,
                         messageInLowerCase.length))

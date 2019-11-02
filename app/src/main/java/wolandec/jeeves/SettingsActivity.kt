@@ -180,7 +180,7 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                 !Utils.isPermissionGranted(this, Manifest.permission.CAMERA) ||
                 !Utils.isPermissionGranted(this, Manifest.permission.WRITE_SETTINGS) ||
                 !Utils.isPermissionGranted(this, Manifest.permission.READ_PHONE_STATE) ||
-                !Utils.isPermissionGranted(this, Manifest.permission.CHANGE_WIFI_STATE)) {
+                !Utils.isPermissionGranted(this, Manifest.permission.CHANGE_WIFI_STATE) || !Utils.isPermissionGranted(this, Manifest.permission.RECEIVE_BOOT_COMPLETED) ) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.RECEIVE_SMS,
                             Manifest.permission.SEND_SMS,
@@ -189,7 +189,8 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
                             Manifest.permission.CAMERA,
                             Manifest.permission.WRITE_SETTINGS,
                             Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.CHANGE_WIFI_STATE),
+                            Manifest.permission.CHANGE_WIFI_STATE,
+                            Manifest.permission.RECEIVE_BOOT_COMPLETED),
                     1)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -228,7 +229,11 @@ class SettingsActivity : AppCompatActivity(), LoginDialogFragment.LoginDialogLis
             try {
                 val i = Intent("wolandec.jeeves.JeevesService")
                 i.setClass(this, JeevesService::class.java!!)
-                this!!.startService(i)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    this.startForegroundService(i)
+                } else {
+                    this.startService(i)
+                }
             } catch (e: Exception) {
                 Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             }
