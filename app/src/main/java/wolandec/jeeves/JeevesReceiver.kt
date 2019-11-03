@@ -27,7 +27,7 @@ class JeevesReceiver() : BroadcastReceiver() {
             } else {
                 context?.startService(Intent(context, JeevesService::class.java))
             }
-            Toast.makeText(context, "Start from receiver", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Start from receiver", Toast.LENGTH_SHORT).show()
         }
 
         if (intent?.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
